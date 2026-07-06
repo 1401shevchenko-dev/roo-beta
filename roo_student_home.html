@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Домик Ру</title>
+  <style>
+    :root {
+      --ink: #20242a;
+      --muted: #657386;
+      --line: #d7e5e7;
+      --teal: #0c7d75;
+      --teal-soft: #e7f6f3;
+      --sun: #f5bd50;
+      --carrot: #ef7d2d;
+      --paper: #fffefa;
+      --white: #fff;
+      --shadow: 0 20px 48px rgba(27, 45, 54, 0.14);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 20% 18%, rgba(245, 189, 80, 0.22), transparent 24%),
+        radial-gradient(circle at 84% 72%, rgba(12, 125, 117, 0.14), transparent 26%),
+        linear-gradient(140deg, #f8fbfb 0%, #edf7f5 50%, #fff7ed 100%);
+    }
+
+    .screen {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(300px, 430px) minmax(0, 1fr);
+      gap: 22px;
+      padding: 24px;
+    }
+
+    .panel {
+      border: 1px solid rgba(12, 125, 117, 0.18);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .roo {
+      min-height: calc(100vh - 48px);
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      background:
+        radial-gradient(circle at 50% 83%, rgba(247, 205, 116, 0.32), transparent 32%),
+        linear-gradient(180deg, #fffefa, #edf8f4);
+    }
+
+    .roo-head {
+      padding: 22px 22px 0;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      font-size: clamp(34px, 5vw, 52px);
+      line-height: 0.98;
+    }
+
+    .subtitle {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.35;
+    }
+
+    .roo-art {
+      align-self: end;
+      width: min(330px, 80%);
+      margin: 4px auto 0;
+      display: block;
+    }
+
+    .speech {
+      margin: 0 18px 18px;
+      padding: 14px 15px;
+      border: 1px solid rgba(12, 125, 117, 0.18);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.94);
+      font-size: 17px;
+      line-height: 1.3;
+      font-weight: 800;
+    }
+
+    .main {
+      min-height: calc(100vh - 48px);
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 16px;
+    }
+
+    .today {
+      padding: 24px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: center;
+      background: rgba(255, 254, 250, 0.94);
+    }
+
+    .kicker {
+      color: var(--carrot);
+      font-size: 13px;
+      font-weight: 950;
+      text-transform: uppercase;
+    }
+
+    .today h2 {
+      margin-top: 6px;
+      font-size: clamp(28px, 4vw, 46px);
+      line-height: 1;
+    }
+
+    .today-text {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.36;
+    }
+
+    .btn {
+      min-height: 58px;
+      border: 1px solid var(--teal);
+      border-radius: 8px;
+      background: var(--teal);
+      color: #fff;
+      padding: 14px 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      font-size: 18px;
+      font-weight: 950;
+      white-space: nowrap;
+    }
+
+    .btn.locked {
+      pointer-events: none;
+      color: #8fa0a4;
+      background: #eef4f4;
+      border-color: #d8e6e8;
+    }
+
+    .board {
+      padding: 20px;
+    }
+
+    .board-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .board-head h2 {
+      font-size: 24px;
+      line-height: 1.08;
+    }
+
+    .count {
+      color: var(--teal);
+      font-size: 17px;
+      font-weight: 950;
+      white-space: nowrap;
+    }
+
+    .stars {
+      display: grid;
+      grid-template-columns: repeat(10, minmax(38px, 1fr));
+      gap: 8px;
+    }
+
+    .star {
+      min-height: 48px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: #eef5f6;
+      color: #b8c7ca;
+      border: 1px solid #d8e6e8;
+      font-size: 27px;
+      font-weight: 950;
+    }
+
+    .star.done {
+      background: #fff3d1;
+      color: #d4931f;
+      border-color: #efd08a;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.72);
+    }
+
+    .path {
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .step {
+      min-height: 132px;
+      border: 1px solid rgba(12, 125, 117, 0.18);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.92);
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+      align-content: start;
+    }
+
+    .step-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--teal-soft);
+      color: var(--teal);
+      font-size: 21px;
+      font-weight: 950;
+    }
+
+    .step h3 {
+      font-size: 18px;
+      line-height: 1.1;
+    }
+
+    .step p {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.32;
+    }
+
+    @media (max-width: 900px) {
+      .screen {
+        grid-template-columns: 1fr;
+      }
+
+      .roo,
+      .main {
+        min-height: auto;
+      }
+
+      .today {
+        grid-template-columns: 1fr;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .path {
+        grid-template-columns: 1fr;
+      }
+
+      .stars {
+        grid-template-columns: repeat(5, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="screen">
+    <section class="panel roo">
+      <div class="roo-head">
+        <h1>Домик Ру</h1>
+        <p class="subtitle">Музыкальная дорожка на сегодня</p>
+      </div>
+      <img class="roo-art" src="rabbit_roo_lowered_count_0.png?v=20260704" alt="Кролик Ру">
+      <p class="speech" id="speech">Ру ждет сегодняшнюю игру.</p>
+    </section>
+
+    <section class="main">
+      <section class="panel today">
+        <div>
+          <div class="kicker" id="kicker">Сегодня</div>
+          <h2 id="todayTitle">Нотки-вишенки</h2>
+          <p class="today-text" id="todayText">Сначала соберем ноты, потом прочитаем ритм.</p>
+        </div>
+        <a class="btn" id="playButton" href="two_note_link_game.html?start=treble&frame=0">Играть сегодня</a>
+      </section>
+
+      <section class="panel board" aria-label="Доска звезд">
+        <div class="board-head">
+          <h2>Звезды Ру</h2>
+          <span class="count" id="starCount">0 / 10</span>
+        </div>
+        <div class="stars" id="starBoard"></div>
+      </section>
+
+      <section class="panel path" aria-label="Путь дня">
+        <article class="step">
+          <div class="step-mark">𝄞</div>
+          <h3>Скрипичный ключ</h3>
+          <p>Поставить ноты, назвать их, собрать ритм.</p>
+        </article>
+        <article class="step">
+          <div class="step-mark">𝄢</div>
+          <h3>Басовый ключ</h3>
+          <p>Найти такие же нотки в другом ключе.</p>
+        </article>
+        <article class="step">
+          <div class="step-mark">★</div>
+          <h3>Звезда дня</h3>
+          <p>Ру получает звезду, а новая игра откроется завтра.</p>
+        </article>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const frameNames = [
+      "Нотки-вишенки",
+      "Солнечная дорожка",
+      "Василек",
+      "Жучка и кот",
+      "Лошадка",
+      "У кота-Воркота",
+      "Как под горкой",
+      "Вот иду я",
+      "Дождик",
+      "Сидит ворон"
+    ];
+    const starStorageKey = "rooCollectedDayStars";
+    const trebleCompletionKey = "rooPianoCompletedFrames";
+    const bassCompletionKey = "rooBassPianoCompletedFrames";
+    const params = new URLSearchParams(window.location.search);
+    const startKey = params.get("start") === "bass" ? "bass" : "treble";
+    const doneFrame = Number(params.get("frame"));
+
+    function localDateStamp(date = new Date()) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function isBeforeToday(dateStamp) {
+      const date = new Date(`${dateStamp}T00:00:00`);
+      const today = new Date(`${localDateStamp()}T00:00:00`);
+      return Number.isFinite(date.getTime()) && date < today;
+    }
+
+    function readMap(key) {
+      try {
+        return JSON.parse(localStorage.getItem(key) || "{}");
+      } catch {
+        return {};
+      }
+    }
+
+    function saveMap(key, value) {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+      } catch {
+        // Progress display remains available even if saving is blocked.
+      }
+    }
+
+    function readStars() {
+      return readMap(starStorageKey);
+    }
+
+    function starDate(stars, index) {
+      const value = stars[index];
+      if (typeof value === "string") return value;
+      if (value) return "2000-01-01";
+      return "";
+    }
+
+    function syncIncomingStar() {
+      const stars = readStars();
+      if (params.get("done") === "1" && Number.isInteger(doneFrame) && doneFrame >= 0 && doneFrame < frameNames.length) {
+        if (!stars[doneFrame] || stars[doneFrame] === true) {
+          stars[doneFrame] = localDateStamp();
+          saveMap(starStorageKey, stars);
+        }
+      }
+      return stars;
+    }
+
+    function gameUrl(key, index) {
+      const page = key === "bass" ? "bass_clef_small_octave_game.html" : "two_note_link_game.html";
+      return `${page}?start=${startKey}&frame=${index}`;
+    }
+
+    function nextRouteInfo(stars) {
+      const nextIndex = frameNames.findIndex((_, index) => !starDate(stars, index));
+      if (nextIndex === -1) {
+        return {
+          status: "complete",
+          title: "Все звезды собраны",
+          text: "Ру прошел весь путь.",
+          speech: "Все звезды на месте!",
+          label: "Путь завершен",
+          url: ""
+        };
+      }
+
+      if (nextIndex > 0) {
+        const previousDate = starDate(stars, nextIndex - 1);
+        if (!previousDate || !isBeforeToday(previousDate)) {
+          return {
+            status: "locked",
+            title: "Сегодня звезда уже собрана",
+            text: "Новая игра откроется завтра.",
+            speech: "Ру повесил звезду на доску наград. Завтра пойдем дальше.",
+            label: "Вернуться завтра",
+            url: ""
+          };
+        }
+      }
+
+      const trebleDone = readMap(trebleCompletionKey);
+      const bassDone = readMap(bassCompletionKey);
+      let key = startKey;
+
+      if (startKey === "treble" && trebleDone[nextIndex] && !bassDone[nextIndex]) key = "bass";
+      if (startKey === "bass" && bassDone[nextIndex] && !trebleDone[nextIndex]) key = "treble";
+
+      if (trebleDone[nextIndex] && bassDone[nextIndex]) {
+        return {
+          status: "ready",
+          title: "Забрать звезду дня",
+          text: "Обе части пройдены.",
+          speech: "Ру уже собрал морковки. Осталось повесить звезду на доску наград.",
+          label: "Забрать звезду",
+          url: `roo_student_home.html?done=1&start=${startKey}&frame=${nextIndex}`
+        };
+      }
+
+      return {
+        status: "ready",
+        title: frameNames[nextIndex],
+        text: key === "bass" ? "Сегодня Ру идет в басовый ключ." : "Сегодня Ру идет в скрипичный ключ.",
+        speech: key === "bass" ? "Ру зовет в басовый ключ." : "Ру зовет в скрипичный ключ.",
+        label: "Играть сегодня",
+        url: gameUrl(key, nextIndex)
+      };
+    }
+
+    function renderStars(stars) {
+      const board = document.getElementById("starBoard");
+      const collected = frameNames.filter((_, index) => starDate(stars, index)).length;
+      document.getElementById("starCount").textContent = `${collected} / ${frameNames.length}`;
+      board.innerHTML = "";
+      frameNames.forEach((name, index) => {
+        const star = document.createElement("div");
+        star.className = `star ${starDate(stars, index) ? "done" : ""}`;
+        star.textContent = "★";
+        star.title = starDate(stars, index) ? `${name}: звезда собрана` : `${name}: звезда ждет`;
+        board.appendChild(star);
+      });
+    }
+
+    function render() {
+      const stars = syncIncomingStar();
+      const info = nextRouteInfo(stars);
+      const button = document.getElementById("playButton");
+
+      document.getElementById("kicker").textContent = info.status === "ready" ? "Сегодня" : "Пауза";
+      document.getElementById("todayTitle").textContent = info.title;
+      document.getElementById("todayText").textContent = info.text;
+      document.getElementById("speech").textContent = info.speech;
+      button.textContent = info.label;
+      button.classList.toggle("locked", info.status !== "ready");
+
+      if (info.url) {
+        button.href = info.url;
+        button.removeAttribute("aria-disabled");
+      } else {
+        button.removeAttribute("href");
+        button.setAttribute("aria-disabled", "true");
+      }
+
+      renderStars(stars);
+    }
+
+    render();
+  </script>
+</body>
+</html>

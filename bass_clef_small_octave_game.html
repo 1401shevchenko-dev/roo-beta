@@ -1,0 +1,2357 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Игры Ру: басовый ключ малой октавы</title>
+  <style>
+    @font-face {
+      font-family: "Bravura";
+      src: url("assets/Bravura.otf") format("opentype");
+    }
+
+    :root {
+      --ink: #20242a;
+      --muted: #637083;
+      --line: #d7e5e7;
+      --teal: #0c7d75;
+      --teal-deep: #095d58;
+      --teal-soft: #e7f6f3;
+      --sky: #eaf7fb;
+      --sun: #f5bd50;
+      --carrot: #ef7d2d;
+      --paper: #fffefa;
+      --white: #fff;
+      --shadow: 0 18px 42px rgba(27, 45, 54, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 16% 18%, rgba(245, 189, 80, 0.16), transparent 25%),
+        linear-gradient(140deg, #f8fbfb 0%, #edf7f5 46%, #fff7ed 100%);
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(260px, 330px) minmax(0, 1fr);
+      gap: 18px;
+      padding: 20px;
+    }
+
+    .side {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .panel {
+      border: 1px solid rgba(12, 125, 117, 0.18);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.86);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .brand {
+      padding: 17px;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      font-size: 26px;
+      line-height: 1.05;
+    }
+
+    .subtitle {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .frame-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+      padding: 8px;
+    }
+
+    .reward-board {
+      padding: 14px;
+    }
+
+    .reward-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .reward-head h2 {
+      font-size: 18px;
+      line-height: 1.12;
+    }
+
+    .reward-count {
+      color: var(--teal);
+      font-size: 15px;
+      font-weight: 950;
+      white-space: nowrap;
+    }
+
+    .star-board {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 7px;
+    }
+
+    .board-star {
+      min-height: 34px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: #eef5f6;
+      color: #b8c7ca;
+      font-size: 20px;
+      font-weight: 950;
+      border: 1px solid #d8e6e8;
+    }
+
+    .board-star.collected {
+      background: #fff3d1;
+      color: #d4931f;
+      border-color: #efd08a;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.72);
+    }
+
+    .frame-panel {
+      overflow: visible;
+      position: relative;
+      z-index: 5;
+    }
+
+    .frame-tab {
+      position: relative;
+      width: 100%;
+      min-height: 46px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--muted);
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 9px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .frame-tab:hover {
+      background: #f2fbf8;
+      color: var(--ink);
+    }
+
+    .frame-tab.active {
+      background: #fff5df;
+      color: var(--ink);
+      font-weight: 800;
+    }
+
+    .frame-tab.locked {
+      color: #899aa3;
+      cursor: not-allowed;
+      background: rgba(247, 250, 250, 0.78);
+    }
+
+    .frame-tab.locked:hover {
+      background: #f7fbfa;
+      color: #7d8e97;
+    }
+
+    .frame-tab.locked::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      left: 8px;
+      top: calc(100% + 5px);
+      z-index: 30;
+      max-width: 190px;
+      padding: 7px 8px;
+      border-radius: 8px;
+      background: rgba(32, 36, 42, 0.92);
+      color: #fff;
+      font-size: 12px;
+      line-height: 1.2;
+      font-weight: 750;
+      opacity: 0;
+      transform: translateY(-3px);
+      pointer-events: none;
+      transition: opacity 140ms ease, transform 140ms ease;
+      white-space: nowrap;
+    }
+
+    .frame-tab.locked:hover::after {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .frame-number {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: #b5c9cf;
+      font-weight: 900;
+      font-size: 12px;
+    }
+
+    .frame-tab.active .frame-number {
+      background: var(--teal);
+    }
+
+    .frame-tab.locked .frame-number {
+      background: #b5c9cf;
+    }
+
+    .frame-lock-svg {
+      width: 15px;
+      height: 15px;
+      display: block;
+      fill: none;
+      stroke: #fff;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .rabbit-panel {
+      position: relative;
+      min-height: 402px;
+      background:
+        radial-gradient(circle at 48% 80%, rgba(247, 205, 116, 0.28), transparent 31%),
+        linear-gradient(180deg, #fffefa, #edf8f4);
+    }
+
+    .rabbit-scene {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: start center;
+      padding-top: 8px;
+    }
+
+    .rabbit-art {
+      display: block;
+      width: min(235px, 78%);
+      height: auto;
+    }
+
+    .speech {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: 14px;
+      padding: 12px 13px;
+      border: 1px solid rgba(12, 125, 117, 0.18);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.94);
+      font-size: 15px;
+      line-height: 1.32;
+    }
+
+    .steps {
+      display: grid;
+    }
+
+    .step-item {
+      display: grid;
+      grid-template-columns: 30px 1fr;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .step-item:last-child {
+      border-bottom: 0;
+    }
+
+    .step-dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: #b7c8cf;
+      font-weight: 900;
+      font-size: 12px;
+    }
+
+    .step-item.active {
+      color: var(--ink);
+      background: #fff7e7;
+      font-weight: 800;
+    }
+
+    .step-item.done {
+      color: var(--teal);
+      background: #f3fbf8;
+    }
+
+    .step-item.active .step-dot,
+    .step-item.done .step-dot {
+      background: var(--teal);
+    }
+
+    .main {
+      min-width: 0;
+    }
+
+    .lesson {
+      min-height: calc(100vh - 40px);
+      border: 1px solid rgba(12, 125, 117, 0.18);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .lesson-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(234, 247, 251, 0.82);
+    }
+
+    .lesson-title {
+      font-size: 23px;
+      line-height: 1.12;
+    }
+
+    .lesson-note {
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 6px;
+      max-width: 780px;
+    }
+
+    .metrics {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .metric {
+      min-width: 92px;
+      padding: 8px 10px;
+      border: 1px solid rgba(12, 125, 117, 0.16);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.82);
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 18px;
+      line-height: 1;
+      color: var(--teal);
+    }
+
+    .metric span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.15;
+    }
+
+    .journey {
+      padding: 14px 20px 17px;
+      border-bottom: 1px solid var(--line);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(255, 250, 240, 0.72));
+    }
+
+    .journey-map {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 11px;
+    }
+
+    .map-node {
+      min-height: 58px;
+      border: 1px solid rgba(12, 125, 117, 0.13);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.76);
+      display: grid;
+      grid-template-columns: 34px 1fr 24px;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 9px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .map-node.active {
+      background: #fff6df;
+      border-color: rgba(239, 125, 45, 0.28);
+      color: var(--ink);
+    }
+
+    .map-node.done {
+      background: #f2fbf8;
+      color: var(--teal);
+      border-color: rgba(12, 125, 117, 0.2);
+    }
+
+    .map-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #e9f4f3;
+      color: var(--teal);
+      font-weight: 950;
+      line-height: 1;
+    }
+
+    .map-house {
+      position: relative;
+      width: 24px;
+      height: 20px;
+      margin-top: 5px;
+      border-radius: 4px 4px 6px 6px;
+      background: #fff5df;
+      border: 2px solid var(--teal);
+    }
+
+    .map-house::before {
+      content: "";
+      position: absolute;
+      left: 2px;
+      top: -9px;
+      width: 16px;
+      height: 16px;
+      background: #f5bd50;
+      border-left: 2px solid var(--teal);
+      border-top: 2px solid var(--teal);
+      transform: rotate(45deg);
+      border-radius: 3px 0 0 0;
+    }
+
+    .map-star {
+      color: #d2a13e;
+      font-size: 20px;
+      line-height: 1;
+      opacity: 0.22;
+      transform: scale(0.88);
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+
+    .map-node.done .map-star,
+    .map-node.active .map-star {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .journey-track {
+      position: relative;
+      height: 16px;
+      border-radius: 999px;
+      background: #edf3f6;
+      border: 1px solid #d4e0e5;
+    }
+
+    .journey-fill {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #f6c65a, #ef7d2d);
+      transition: width 260ms ease;
+    }
+
+    .journey-runner {
+      position: absolute;
+      left: 0%;
+      top: 58%;
+      width: 36px;
+      height: 44px;
+      transform: translate(-50%, -50%);
+      transition: left 260ms ease;
+      filter: drop-shadow(0 6px 8px rgba(112, 69, 30, 0.16));
+    }
+
+    .journey-runner img {
+      width: 36px;
+      height: 44px;
+      object-fit: contain;
+      transform: rotate(-12deg);
+    }
+
+    .work {
+      padding: 20px 22px 24px;
+    }
+
+    .task-bar {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.94);
+      margin-bottom: 16px;
+    }
+
+    .task-main {
+      font-size: 24px;
+      line-height: 1.14;
+      font-weight: 900;
+    }
+
+    .task-sub {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.32;
+      max-width: 720px;
+    }
+
+    .task-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      border: 1px solid rgba(12, 125, 117, 0.3);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--teal);
+      font-weight: 900;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: transform 150ms ease, background 150ms ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+    }
+
+    .btn:hover {
+      background: var(--teal-soft);
+      transform: translateY(-1px);
+    }
+
+    .btn.primary {
+      background: var(--teal);
+      color: #fff;
+      border-color: var(--teal);
+    }
+
+    .btn.primary:hover {
+      background: var(--teal-deep);
+    }
+
+    .btn.locked-action {
+      border-color: #cfdde2;
+      background: #eef3f5;
+      color: #788991;
+      cursor: not-allowed;
+    }
+
+    .btn.locked-action:hover {
+      background: #eef3f5;
+      transform: none;
+    }
+
+    .board {
+      position: relative;
+      min-height: 540px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.74);
+      padding: 18px;
+      overflow: hidden;
+    }
+
+    .staff-shell {
+      position: relative;
+      min-height: 330px;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #fff, #fbfefe);
+      border: 1px solid #dce8ed;
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    .staff-svg {
+      width: 100%;
+      height: 330px;
+      display: block;
+    }
+
+    .staff-line,
+    .bar-line,
+    .ledger,
+    .clef {
+      stroke: none;
+      fill: #111;
+      color: #111;
+    }
+
+    .staff-line,
+    .bar-line,
+    .ledger {
+      fill: none;
+      stroke: #111;
+      stroke-width: 2.05;
+      stroke-linecap: round;
+    }
+
+    .bar-line {
+      stroke-width: 2.25;
+      stroke-linecap: butt;
+    }
+
+    .clef {
+      font-family: "Bravura", serif;
+      font-size: 112px;
+      line-height: 1;
+    }
+
+    .bass-clef {
+      font-size: 96px;
+    }
+
+    .time-number {
+      fill: #111;
+      stroke: #fff;
+      stroke-width: 2.4px;
+      paint-order: stroke fill;
+      font-size: 45px;
+      font-weight: 900;
+      text-anchor: middle;
+      dominant-baseline: central;
+    }
+
+    .note-zone {
+      cursor: pointer;
+      fill: transparent;
+    }
+
+    .note-zone:hover,
+    .note-zone.hint {
+      fill: rgba(245, 189, 80, 0.16);
+    }
+
+    .note-zone.soft-hint {
+      fill: rgba(239, 125, 45, 0.2);
+      animation: soft-help-pulse 900ms ease-in-out 2;
+    }
+
+    .note-head {
+      fill: #111;
+      stroke: #111;
+      stroke-width: 1;
+    }
+
+    .note-head.open {
+      fill: #fff;
+    }
+
+    .note-stem {
+      stroke: #111;
+      stroke-width: 2.8;
+      stroke-linecap: butt;
+    }
+
+    .beam {
+      stroke: #111;
+      stroke-width: 7;
+      stroke-linecap: butt;
+    }
+
+    .slur {
+      fill: none;
+      stroke: #111;
+      stroke-width: 2.45;
+      stroke-linecap: round;
+    }
+
+    .slot-mark {
+      fill: none;
+      stroke: #b8ccd3;
+      stroke-width: 2;
+      stroke-dasharray: 5 7;
+      opacity: 0.62;
+    }
+
+    .slot-mark.active {
+      stroke: var(--carrot);
+      opacity: 1;
+    }
+
+    .name-label,
+    .rhythm-label {
+      font-size: 18px;
+      font-weight: 900;
+      fill: var(--teal);
+      text-anchor: middle;
+    }
+
+    .rhythm-label {
+      fill: #b56016;
+    }
+
+    .active-note-ring {
+      fill: none;
+      stroke: var(--carrot);
+      stroke-width: 3;
+      stroke-dasharray: 5 6;
+      opacity: 0.78;
+    }
+
+    .note-tray,
+    .answer-grid,
+    .reminder-row {
+      margin-top: 14px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .drag-note {
+      min-width: 118px;
+      min-height: 54px;
+      border-radius: 8px;
+      border: 1px solid rgba(12, 125, 117, 0.24);
+      background: #fff;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      font-weight: 900;
+      cursor: grab;
+      user-select: none;
+      touch-action: none;
+      box-shadow: 0 8px 18px rgba(26, 36, 50, 0.08);
+      transition: transform 150ms ease, opacity 150ms ease;
+    }
+
+    .drag-note:active {
+      cursor: grabbing;
+    }
+
+    .drag-note.dragging {
+      position: fixed;
+      z-index: 30;
+      pointer-events: none;
+      opacity: 0.94;
+      transform: translate(-50%, -50%) scale(1.04);
+    }
+
+    .note-symbol {
+      font-family: "Bravura", serif;
+      font-size: 34px;
+      line-height: 1;
+    }
+
+    .answer-card {
+      min-height: 43px;
+      min-width: 66px;
+      border-radius: 8px;
+      border: 1px solid #d6e3e7;
+      background: #fff;
+      color: var(--ink);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      cursor: pointer;
+      padding: 0 13px;
+    }
+
+    .answer-card:hover {
+      background: var(--teal-soft);
+    }
+
+    .answer-card.done {
+      border-color: rgba(12, 125, 117, 0.44);
+      background: var(--teal-soft);
+      color: var(--teal);
+      cursor: default;
+    }
+
+    .status-line {
+      min-height: 52px;
+      margin-top: 14px;
+      padding: 12px 13px;
+      border: 1px solid rgba(12, 125, 117, 0.16);
+      border-radius: 8px;
+      background: #f7fbfa;
+      color: #35535a;
+      font-size: 15px;
+      line-height: 1.35;
+    }
+
+    .reminder {
+      display: inline-flex;
+      align-items: center;
+      min-height: 38px;
+      border-radius: 8px;
+      border: 1px solid #ead6a8;
+      background: #fff8e7;
+      color: #7c4b14;
+      font-weight: 850;
+      padding: 8px 10px;
+      font-size: 14px;
+    }
+
+    .final-view {
+      display: none;
+    }
+
+    .final-view.active {
+      display: block;
+    }
+
+    .game-view.hidden {
+      display: none;
+    }
+
+    .final-hero {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      padding: 16px;
+      border: 1px solid rgba(12, 125, 117, 0.16);
+      border-radius: 8px;
+      background: #f6fbf9;
+      margin-bottom: 16px;
+    }
+
+    .final-hero strong {
+      display: block;
+      font-size: 24px;
+      line-height: 1.12;
+    }
+
+    .piece-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .piece-card {
+      border: 1px solid rgba(239, 125, 45, 0.28);
+      border-radius: 8px;
+      background: #fffaf0;
+      padding: 15px;
+    }
+
+    .piece-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-weight: 900;
+      font-size: 19px;
+    }
+
+    .carrot-small {
+      width: 34px;
+      height: 42px;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 7px rgba(112, 69, 30, 0.14));
+    }
+
+    .piece-preview {
+      width: 100%;
+      margin-top: 12px;
+      border: 1px solid #ead6a8;
+      border-radius: 8px;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .piece-preview img {
+      display: block;
+      width: 100%;
+      height: 178px;
+      object-fit: contain;
+      background: #fff;
+    }
+
+    .piece-action {
+      margin-top: 12px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .final-scene {
+      position: relative;
+      min-height: 390px;
+      border: 1px solid rgba(12, 125, 117, 0.16);
+      border-radius: 8px;
+      background:
+        linear-gradient(180deg, rgba(234, 247, 251, 0.74), rgba(255, 250, 240, 0.92)),
+        repeating-linear-gradient(90deg, rgba(12, 125, 117, 0.035) 0 1px, transparent 1px 54px);
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      margin-bottom: 16px;
+    }
+
+    .final-rabbit {
+      position: relative;
+      z-index: 2;
+      width: min(330px, 66%);
+      height: auto;
+      animation: roo-happy 1700ms ease-in-out infinite;
+      transform-origin: center bottom;
+      filter: drop-shadow(0 18px 20px rgba(70, 46, 24, 0.15));
+    }
+
+    .final-carrot {
+      position: absolute;
+      z-index: 1;
+      width: 42px;
+      height: 54px;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 10px rgba(112, 69, 30, 0.16));
+      animation: carrot-dance 2100ms ease-in-out infinite;
+    }
+
+    .final-carrot.one { left: 17%; top: 24%; animation-delay: -120ms; }
+    .final-carrot.two { right: 19%; top: 22%; animation-delay: -620ms; transform: rotate(12deg); }
+    .final-carrot.three { left: 24%; bottom: 18%; animation-delay: -980ms; transform: rotate(-16deg); }
+    .final-carrot.four { right: 25%; bottom: 19%; animation-delay: -420ms; transform: rotate(18deg); }
+
+    .final-badge {
+      position: absolute;
+      z-index: 3;
+      top: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 9px 16px;
+      border-radius: 8px;
+      background: #fffaf0;
+      border: 1px solid rgba(239, 125, 45, 0.28);
+      color: var(--teal);
+      font-size: 26px;
+      line-height: 1;
+      font-weight: 950;
+      box-shadow: 0 14px 26px rgba(27, 45, 54, 0.1);
+      animation: badge-pop 1300ms ease-in-out infinite;
+    }
+
+    .celebration {
+      position: absolute;
+      inset: 18px;
+      display: none;
+      place-items: center;
+      z-index: 20;
+      pointer-events: none;
+    }
+
+    .celebration.active {
+      display: grid;
+      animation: pop-away 980ms ease forwards;
+    }
+
+    .celebration-card {
+      position: relative;
+      min-width: 240px;
+      padding: 24px 26px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid rgba(239, 125, 45, 0.28);
+      box-shadow: var(--shadow);
+      text-align: center;
+      font-size: 40px;
+      line-height: 1;
+      font-weight: 950;
+      color: var(--teal);
+    }
+
+    .spark {
+      position: absolute;
+      width: 8px;
+      height: 18px;
+      border-radius: 99px;
+      background: var(--carrot);
+      opacity: 0.88;
+      animation: spark 920ms ease forwards;
+    }
+
+    .spark:nth-child(1) { left: 22px; top: -18px; transform: rotate(-28deg); }
+    .spark:nth-child(2) { right: 34px; top: -24px; transform: rotate(21deg); background: var(--sun); }
+    .spark:nth-child(3) { left: -18px; bottom: 28px; transform: rotate(62deg); background: var(--teal); }
+    .spark:nth-child(4) { right: -14px; bottom: 38px; transform: rotate(-58deg); }
+
+    @keyframes pop-away {
+      0% { opacity: 0; transform: scale(0.92); }
+      18% { opacity: 1; transform: scale(1); }
+      74% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(1.03); }
+    }
+
+    @keyframes spark {
+      to {
+        opacity: 0;
+        transform: translateY(-28px) rotate(80deg);
+      }
+    }
+
+    @keyframes soft-help-pulse {
+      0%, 100% { opacity: 0.45; }
+      50% { opacity: 1; }
+    }
+
+    @keyframes roo-happy {
+      0%, 100% { transform: translateY(0) rotate(-0.5deg) scale(1); }
+      45% { transform: translateY(-10px) rotate(1deg) scale(1.012); }
+    }
+
+    @keyframes carrot-dance {
+      0%, 100% { opacity: 0.78; translate: 0 0; }
+      45% { opacity: 1; translate: 0 -13px; }
+    }
+
+    @keyframes badge-pop {
+      0%, 100% { transform: translateX(-50%) scale(1); }
+      45% { transform: translateX(-50%) scale(1.06); }
+    }
+
+    @media (max-width: 1040px) {
+      .app {
+        grid-template-columns: 1fr;
+        padding: 12px;
+      }
+
+      .rabbit-panel {
+        min-height: 350px;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .lesson-head,
+      .task-bar,
+      .final-hero {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .metrics,
+      .task-controls {
+        justify-content: flex-start;
+      }
+
+      .piece-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .journey-map {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <aside class="side">
+      <section class="panel brand">
+        <h1 id="brandTitle">Нотки-вишенки</h1>
+        <p class="subtitle" id="brandSubtitle">Басовый ключ. Малая октава.</p>
+      </section>
+
+      <section class="panel frame-panel">
+        <div class="frame-list" id="frameList" aria-label="Игровые рамки"></div>
+      </section>
+
+      <section class="panel reward-board" aria-label="Доска наград">
+        <div class="reward-head">
+          <h2>Звезды Ру</h2>
+          <span class="reward-count" id="rewardCount">0 / 10</span>
+        </div>
+        <div class="star-board" id="starBoard"></div>
+      </section>
+
+      <section class="panel rabbit-panel" aria-label="Кролик Ру">
+        <div class="rabbit-scene">
+          <img class="rabbit-art" id="rabbitArt" src="rabbit_roo_lowered_count_0.png?v=20260704" alt="Кролик Ру с пустой корзинкой">
+        </div>
+        <div class="speech" id="speech">Собери маленькие связки и помоги Ру получить морковку.</div>
+      </section>
+
+      <nav class="panel steps" aria-label="Шаги">
+        <div class="step-item active" data-step="compose"><span class="step-dot">1</span><span>Собираю ноты</span></div>
+        <div class="step-item" data-step="names"><span class="step-dot">2</span><span>Называю ноты</span></div>
+        <div class="step-item" data-step="rhythm"><span class="step-dot">3</span><span>Ритм</span></div>
+        <div class="step-item" data-step="piece"><span class="step-dot">4</span><span>Ура</span></div>
+      </nav>
+    </aside>
+
+    <section class="main">
+      <div class="lesson">
+        <header class="lesson-head">
+          <div>
+            <h2 class="lesson-title" id="lessonTitle">Собери 2 такта</h2>
+            <div class="lesson-note" id="lessonNote">Размер 2/4. В каждом такте две маленькие связки: ти-ти, ти-ти.</div>
+          </div>
+          <div class="metrics" aria-label="Статистика">
+            <div class="metric"><strong id="hintCount">0</strong><span>подсказок</span></div>
+            <div class="metric"><strong id="tryCount">0</strong><span>попыток</span></div>
+            <div class="metric"><strong id="selfScore">100%</strong><span>самостоятельность</span></div>
+          </div>
+        </header>
+
+        <div class="journey" aria-label="Карта пути Ру">
+          <div class="journey-map" id="journeyMap">
+            <div class="map-node active" data-map-step="compose">
+              <span class="map-icon"><span class="map-house"></span></span>
+              <span>Домик Ру</span>
+              <span class="map-star">★</span>
+            </div>
+            <div class="map-node" data-map-step="names">
+              <span class="map-icon">1</span>
+              <span>Имена нот</span>
+              <span class="map-star">★</span>
+            </div>
+            <div class="map-node" data-map-step="rhythm">
+              <span class="map-icon">2</span>
+              <span>Ритм</span>
+              <span class="map-star">★</span>
+            </div>
+            <div class="map-node" data-map-step="piece">
+              <span class="map-icon">3</span>
+              <span>Ура</span>
+              <span class="map-star">★</span>
+            </div>
+          </div>
+          <div class="journey-track">
+            <div class="journey-fill" id="journeyFill"></div>
+            <div class="journey-runner" id="journeyRunner">
+              <img src="carrot_reward_natural.png?v=20260704" alt="" aria-hidden="true">
+            </div>
+          </div>
+        </div>
+
+        <div class="work">
+          <div class="task-bar">
+            <div>
+              <div class="task-main" id="taskTitle">Поставь: до</div>
+              <div class="task-sub" id="taskText">Кликни по нужной линейке или между линейками. Можно тянуть нотку снизу.</div>
+            </div>
+            <div class="task-controls">
+              <button class="btn" id="hintButton" type="button">Подсказать</button>
+              <button class="btn" id="resetButton" type="button">Сбросить</button>
+            </div>
+          </div>
+
+          <div class="game-view" id="gameView">
+            <div class="board" id="board">
+              <div class="staff-shell" id="staffShell">
+                <svg class="staff-svg" id="staffSvg" viewBox="0 0 980 330" role="img" aria-label="Нотный стан">
+                  <g id="staticLayer"></g>
+                  <g id="slotLayer"></g>
+                  <g id="notesLayer"></g>
+                  <g id="labelLayer"></g>
+                  <g id="zonesLayer"></g>
+                </svg>
+              </div>
+
+              <div class="note-tray" id="noteTray">
+                <div class="drag-note" id="dragNote" role="button" tabindex="0">
+                  <span class="note-symbol">&#119134;</span>
+                  <span>Нотка: <span id="dragNoteName">до</span></span>
+                </div>
+              </div>
+
+              <div class="answer-grid" id="answerGrid"></div>
+              <div class="reminder-row" id="reminderRow"></div>
+              <div class="status-line" id="statusLine">Собери пары: до-ре, фа-соль, ми-ре, ля-соль.</div>
+              <div class="celebration" id="celebration">
+                <div class="celebration-card">
+                  <span class="spark"></span><span class="spark"></span><span class="spark"></span><span class="spark"></span>
+                  Ура!
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="final-view" id="finalView">
+            <div class="final-hero">
+              <div>
+                <strong id="finalTitle">Ура! Ру собрал все морковки.</strong>
+                <p class="subtitle" id="finalText">Басовая игра пройдена.</p>
+              </div>
+              <div class="task-controls">
+                <button class="btn" id="againButton" type="button">Пройти еще раз</button>
+                <button class="btn primary" id="nextFrameButton" type="button">Следующая игра</button>
+              </div>
+            </div>
+            <div class="final-scene" aria-label="Ру радуется морковкам">
+              <div class="final-badge">Ура!</div>
+              <img class="final-carrot one" src="carrot_reward_natural.png?v=20260704" alt="">
+              <img class="final-carrot two" src="carrot_reward_natural.png?v=20260704" alt="">
+              <img class="final-carrot three" src="carrot_reward_natural.png?v=20260704" alt="">
+              <img class="final-carrot four" src="carrot_reward_natural.png?v=20260704" alt="">
+              <img class="final-rabbit" src="rabbit_roo_lowered_count_3.png?v=20260704" alt="Кролик Ру с морковками">
+            </div>
+            <div class="piece-grid" id="pieceGrid"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const noteY = {
+      "до": 159,
+      "ре": 148,
+      "ми": 137,
+      "фа": 126,
+      "соль": 115,
+      "ля": 104,
+      "си": 93
+    };
+
+    const durationBeats = {
+      eighth: 0.5,
+      quarter: 1,
+      half: 2
+    };
+
+    const durationLabel = {
+      eighth: "ти",
+      quarter: "та",
+      half: "ту"
+    };
+
+    const noteFrequency = {
+      "до": 130.81,
+      "ре": 146.83,
+      "ми": 164.81,
+      "фа": 174.61,
+      "соль": 196.00,
+      "ля": 220.00,
+      "си": 246.94
+    };
+
+    const noteSoundLength = {
+      eighth: 0.28,
+      quarter: 0.42,
+      half: 0.62
+    };
+
+    let audioContext;
+
+    const staff = {
+      top: 104,
+      gap: 22,
+      left: 58,
+      right: 930,
+      noteStart: 250,
+      noteEnd: 900,
+      clefX: 78,
+      clefY: 132,
+      meterX: 194
+    };
+
+    staff.lines = Array.from({ length: 5 }, (_, index) => staff.top + index * staff.gap);
+    staff.bottom = staff.lines[4];
+    staff.middle = staff.lines[2];
+
+    const frames = [
+      {
+        title: "Нотки-вишенки",
+        short: "Нотки-вишенки",
+        subtitle: "Басовый ключ. Малая октава.",
+        lessonTitle: "Собери 2 такта",
+        lessonNote: "Размер 2/4. В каждом такте две маленькие связки: ти-ти, ти-ти.",
+        speech: "Собери четыре маленькие связки из восьмых нот.",
+        taskStart: "Собери пары: до-ре, фа-соль, ми-ре, ля-соль.",
+        meter: [2, 4],
+        notes: [
+          ["до", "eighth", "1"], ["ре", "eighth", "и"],
+          ["фа", "eighth", "2"], ["соль", "eighth", "и"],
+          ["ми", "eighth", "1"], ["ре", "eighth", "и"],
+          ["ля", "eighth", "2"], ["соль", "eighth", "и"]
+        ],
+        beams: [[0, 1], [2, 3], [4, 5], [6, 7]],
+        slurs: [[0, 1], [2, 3], [4, 5], [6, 7]],
+        reminders: ["ти-ти = две восьмые на одну долю"],
+        pieces: []
+      },
+      {
+        title: "Солнечная дорожка",
+        short: "Солнечная дорожка",
+        subtitle: "Пять нот идут как лучики по ступенькам.",
+        lessonTitle: "Собери солнечную дорожку",
+        lessonNote: "Сначала узнай ноты, потом назови их и прочитай длинные длительности ритмослогами.",
+        speech: "Ру ждет солнечную дорожку из пяти нот.",
+        taskStart: "Собери мелодию: соль, фа, ми, соль, фа, ми.",
+        meter: [4, 4],
+        notes: [["соль", "quarter", "1"], ["фа", "quarter", "2"], ["ми", "half", "3-4"], ["соль", "quarter", "1"], ["фа", "quarter", "2"], ["ми", "half", "3-4"]],
+        slurs: [[0, 2], [3, 5]],
+        reminders: ["та = четверть", "ту = половинка"],
+        pieces: []
+      },
+      {
+        title: "Слова ведут ритм",
+        short: "Василек",
+        subtitle: "Слова помогают вспомнить порядок нот и длительностей.",
+        lessonTitle: "Подружи ноты со словами",
+        lessonNote: "Сначала называй ноты, потом проверь ритм по словам.",
+        speech: "Ру слушает, как слова помогают считать ритм.",
+        taskStart: "Собери нотную строку для Василька.",
+        meter: [4, 4],
+        notes: [["до", "quarter", "1"], ["ре", "quarter", "2"], ["ми", "half", "3-4"], ["ре", "quarter", "1"], ["до", "quarter", "2"], ["ре", "half", "3-4"]],
+        slurs: [[0, 2], [3, 5]],
+        reminders: ["Считаем длительности: та, ти-ти, ту"],
+        pieces: []
+      },
+      {
+        title: "Жучка считает шаги",
+        short: "Жучка и кот",
+        subtitle: "Ритм живет в словах и хлопках.",
+        lessonTitle: "Собери быстрые шаги",
+        lessonNote: "Прочитай слова, прохлопай ритм и найди ноты.",
+        speech: "Жучка бежит мелкими шагами, а кот отвечает спокойно.",
+        taskStart: "Собери ритм: ти-ти, ти-ти, та, та, ту, ту.",
+        meter: [4, 4],
+        notes: [["до", "eighth", "1"], ["ре", "eighth", "и"], ["ми", "eighth", "2"], ["фа", "eighth", "и"], ["соль", "quarter", "3"], ["соль", "quarter", "4"], ["ля", "half", "1-2"], ["соль", "half", "3-4"]],
+        beams: [[0, 1], [2, 3]],
+        reminders: ["ти-ти = быстрые шаги", "та = спокойный шаг", "ту = половинка"],
+        pieces: []
+      },
+      {
+        title: "Цок-цок",
+        short: "Лошадка",
+        subtitle: "Короткий мотив держит пульс и паузу.",
+        lessonTitle: "Собери цоканье",
+        lessonNote: "Обращай внимание на короткие длительности и тишину между ними.",
+        speech: "Ру слушает ровные копытца: цок, цок.",
+        taskStart: "Собери движение: соль, ля, си, ля, соль, ми.",
+        meter: [2, 4],
+        notes: [["соль", "eighth", "1"], ["ля", "eighth", "и"], ["си", "quarter", "2"], ["ля", "eighth", "1"], ["соль", "eighth", "и"], ["ми", "quarter", "2"]],
+        beams: [[0, 1], [3, 4]],
+        slurs: [[0, 2], [3, 5]],
+        reminders: ["ти-ти = цок-цок", "после фразы можно оставить тишину"],
+        pieces: []
+      },
+      {
+        title: "Колыбелька кота",
+        short: "У кота-Воркота",
+        subtitle: "Проверь порядок нот и длинные длительности.",
+        lessonTitle: "Собери колыбельку",
+        lessonNote: "Найди ноты и отметь, где стоит длинная половинка.",
+        speech: "Ру ищет короткие и длинные длительности в колыбельке.",
+        taskStart: "Собери порядок нот: ми, фа, соль, ми, ре, до.",
+        meter: [4, 4],
+        notes: [["ми", "quarter", "1"], ["фа", "quarter", "2"], ["соль", "half", "3-4"], ["ми", "quarter", "1"], ["ре", "quarter", "2"], ["до", "half", "3-4"]],
+        slurs: [[0, 2], [3, 5]],
+        reminders: ["та = четверть", "ту = половинка"],
+        pieces: []
+      },
+      {
+        title: "Горка вверх-вниз",
+        short: "Как под горкой",
+        subtitle: "Мелодия катится вниз и снова поднимается.",
+        lessonTitle: "Собери горку",
+        lessonNote: "Отметь, где мелодия спускается, а где поднимается.",
+        speech: "Ру катится с горки и поднимается обратно.",
+        taskStart: "Собери дорожку: до, ре, ми, фа, соль, фа, ми, ре.",
+        meter: [4, 4],
+        notes: [["до", "quarter", "1"], ["ре", "quarter", "2"], ["ми", "quarter", "3"], ["фа", "quarter", "4"], ["соль", "quarter", "1"], ["фа", "quarter", "2"], ["ми", "quarter", "3"], ["ре", "quarter", "4"]],
+        slurs: [[0, 3], [4, 7]],
+        reminders: ["вверх = ноты поднимаются", "вниз = ноты спускаются"],
+        pieces: []
+      },
+      {
+        title: "Шаги вверх и вниз",
+        short: "Вот иду я",
+        subtitle: "Ноты идут вверх, потом вниз.",
+        lessonTitle: "Собери прогулку",
+        lessonNote: "Сначала движение вверх, потом движение вниз.",
+        speech: "Ру смотрит, куда движется мелодия: вверх или вниз.",
+        taskStart: "Собери прогулку: до, ре, ми, фа, соль, фа, ми, ре.",
+        meter: [4, 4],
+        notes: [["до", "quarter", "1"], ["ре", "quarter", "2"], ["ми", "quarter", "3"], ["фа", "quarter", "4"], ["соль", "quarter", "1"], ["фа", "quarter", "2"], ["ми", "quarter", "3"], ["ре", "quarter", "4"]],
+        slurs: [[0, 4], [4, 7]],
+        reminders: ["сначала вверх", "потом вниз"],
+        pieces: []
+      },
+      {
+        title: "Дождик",
+        short: "Дождик",
+        subtitle: "Проверь повторяющиеся ноты и длинное окончание.",
+        lessonTitle: "Собери дождик",
+        lessonNote: "Найди повтор нот и прочитай длительности ритмослогами.",
+        speech: "Ру считает капли: та, та, та, та, та, та, ту.",
+        taskStart: "Собери дождик: ля, соль, фа, фа, ми, ми, ре.",
+        meter: [4, 4],
+        notes: [["ля", "quarter", "1"], ["соль", "quarter", "2"], ["фа", "quarter", "3"], ["фа", "quarter", "4"], ["ми", "quarter", "1"], ["ми", "quarter", "2"], ["ре", "half", "3-4"]],
+        slurs: [[0, 3], [4, 6]],
+        reminders: ["та = четверть", "ту = половинка"],
+        pieces: []
+      },
+      {
+        title: "Ворон на ветке",
+        short: "Сидит ворон",
+        subtitle: "Повторяющиеся ноты нужно узнать и не перепутать.",
+        lessonTitle: "Собери повтор",
+        lessonNote: "Найди повтор одной ноты и прочитай восьмые ритмослогами.",
+        speech: "Ру ищет повтор: до-до-до-до, ре-ре-ре-до.",
+        taskStart: "Собери повтор: до, до, до, до, ре, ре, ре, до.",
+        meter: [2, 4],
+        notes: [["до", "eighth", "1"], ["до", "eighth", "и"], ["до", "eighth", "2"], ["до", "eighth", "и"], ["ре", "eighth", "1"], ["ре", "eighth", "и"], ["ре", "eighth", "2"], ["до", "eighth", "и"]],
+        beams: [[0, 1], [2, 3], [4, 5], [6, 7]],
+        reminders: ["ти-ти = две восьмые", "повтор = та же самая нота"],
+        pieces: []
+      }
+    ];
+
+    const courseStartKey = "rooBassPianoCourseStartDate";
+    const completedFramesKey = "rooBassPianoCompletedFrames";
+    const tomorrowText = "игра откроется завтра";
+    const previousText = "сначала пройди предыдущую игру";
+    const currentKey = "bass";
+    const routeParams = new URLSearchParams(window.location.search);
+    const reviewMode = routeParams.get("review") === "1";
+    const demoMode = routeParams.get("demo") === "1";
+    const routeStartKey = routeParams.get("start") === "treble" ? "treble" : "bass";
+    const routeFrameIndex = Number(routeParams.get("frame"));
+    const starStorageKey = "rooCollectedDayStars";
+
+    const state = {
+      frameIndex: 0,
+      screen: "compose",
+      placed: [],
+      hints: 0,
+      tries: 0,
+      answerIndex: 0,
+      dragging: false,
+      positions: []
+    };
+
+    if (Number.isInteger(routeFrameIndex) && routeFrameIndex >= 0 && routeFrameIndex < frames.length) {
+      state.frameIndex = routeFrameIndex;
+    }
+
+    let softHelpTimer;
+
+    const staticLayer = document.getElementById("staticLayer");
+    const slotLayer = document.getElementById("slotLayer");
+    const notesLayer = document.getElementById("notesLayer");
+    const labelLayer = document.getElementById("labelLayer");
+    const zonesLayer = document.getElementById("zonesLayer");
+    const staffShell = document.getElementById("staffShell");
+    const dragNote = document.getElementById("dragNote");
+    const dragNoteName = document.getElementById("dragNoteName");
+    const noteTray = document.getElementById("noteTray");
+    const answerGrid = document.getElementById("answerGrid");
+    const reminderRow = document.getElementById("reminderRow");
+    const statusLine = document.getElementById("statusLine");
+    const rewardCount = document.getElementById("rewardCount");
+    const starBoard = document.getElementById("starBoard");
+    const hintCount = document.getElementById("hintCount");
+    const tryCount = document.getElementById("tryCount");
+    const selfScore = document.getElementById("selfScore");
+    const journeyFill = document.getElementById("journeyFill");
+    const journeyRunner = document.getElementById("journeyRunner");
+    const rabbitArt = document.getElementById("rabbitArt");
+    const speech = document.getElementById("speech");
+    const gameView = document.getElementById("gameView");
+    const finalView = document.getElementById("finalView");
+    const celebration = document.getElementById("celebration");
+
+    function frame() {
+      return frames[state.frameIndex];
+    }
+
+    function localDateStamp(date = new Date()) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function readCourseStart() {
+      try {
+        let saved = localStorage.getItem(courseStartKey);
+        if (!saved) {
+          saved = localDateStamp();
+          localStorage.setItem(courseStartKey, saved);
+        }
+        return saved;
+      } catch {
+        return localDateStamp();
+      }
+    }
+
+    function readCompletions() {
+      try {
+        return JSON.parse(localStorage.getItem(completedFramesKey) || "{}");
+      } catch {
+        return {};
+      }
+    }
+
+    function readStars() {
+      try {
+        return JSON.parse(localStorage.getItem(starStorageKey) || "{}");
+      } catch {
+        return {};
+      }
+    }
+
+    function awardDayStar(index) {
+      try {
+        const stars = readStars();
+        if (!stars[index] || stars[index] === true) stars[index] = localDateStamp();
+        localStorage.setItem(starStorageKey, JSON.stringify(stars));
+      } catch {
+        // The reward board stays visual if saving is blocked.
+      }
+      renderStarBoard();
+    }
+
+    function renderStarBoard() {
+      const stars = readStars();
+      const collected = frames.filter((_, index) => stars[index]).length;
+      rewardCount.textContent = `${collected} / ${frames.length}`;
+      starBoard.innerHTML = "";
+      frames.forEach((item, index) => {
+        const star = document.createElement("div");
+        star.className = `board-star ${stars[index] ? "collected" : ""}`;
+        star.textContent = "★";
+        star.title = stars[index] ? `${item.short}: звезда собрана` : `${item.short}: звезда ждет`;
+        starBoard.appendChild(star);
+      });
+    }
+
+    function saveCompletion(index) {
+      try {
+        const completions = readCompletions();
+        completions[index] = completions[index] || localDateStamp();
+        localStorage.setItem(completedFramesKey, JSON.stringify(completions));
+      } catch {
+        // The prototype still works without saved progress.
+      }
+    }
+
+    function isBeforeToday(dateStamp) {
+      const date = new Date(`${dateStamp}T00:00:00`);
+      const today = new Date(`${localDateStamp()}T00:00:00`);
+      return Number.isFinite(date.getTime()) && date < today;
+    }
+
+    function starDate(stars, index) {
+      const value = stars[index];
+      if (typeof value === "string") return value;
+      if (value) return "2000-01-01";
+      return "";
+    }
+
+    function frameLockInfo(index) {
+      if (reviewMode) return { locked: false, message: "" };
+      readCourseStart();
+      if (index === 0) return { locked: false, message: "" };
+      const previousStarDate = starDate(readStars(), index - 1);
+      if (!previousStarDate) return { locked: true, message: previousText };
+      if (!isBeforeToday(previousStarDate)) return { locked: true, message: tomorrowText };
+      return { locked: false, message: "" };
+    }
+
+    function isFrameLocked(index) {
+      return frameLockInfo(index).locked;
+    }
+
+    function showLockedMessage(message = tomorrowText) {
+      const sentence = message === previousText
+        ? "Сначала нужно пройти предыдущую игру."
+        : "Эта игра пока закрыта.";
+      speech.textContent = sentence;
+      if (statusLine) statusLine.textContent = sentence;
+    }
+
+    function noteObjects(source = frame().notes) {
+      return source.map(([name, duration, count], index) => ({
+        name,
+        duration,
+        count,
+        rhythm: durationLabel[duration],
+        index,
+        y: noteY[name],
+        beats: durationBeats[duration]
+      }));
+    }
+
+    function totalBeats(notes = noteObjects()) {
+      return notes.reduce((sum, note) => sum + note.beats, 0);
+    }
+
+    function computePositions(notes = noteObjects()) {
+      const start = staff.noteStart;
+      const end = staff.noteEnd;
+      const width = end - start;
+      const total = totalBeats(notes);
+      let cursor = 0;
+      state.positions = notes.map((note) => {
+        const x = start + ((cursor + note.beats * 0.42) / total) * width;
+        cursor += note.beats;
+        return Math.round(x);
+      });
+    }
+
+    function el(name, attrs = {}) {
+      const node = document.createElementNS("http://www.w3.org/2000/svg", name);
+      Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, String(value)));
+      return node;
+    }
+
+    function drawStaticStaff() {
+      staticLayer.innerHTML = "";
+      staff.lines.forEach((y) => {
+        staticLayer.appendChild(el("line", { class: "staff-line", x1: staff.left, y1: y, x2: staff.right, y2: y }));
+      });
+
+      const clef = el("text", { class: "clef bass-clef", x: staff.clefX, y: staff.clefY });
+      clef.textContent = "\uD834\uDD22";
+      staticLayer.appendChild(clef);
+
+      const [top, bottom] = frame().meter;
+      const meterTop = el("text", { class: "time-number", x: 0, y: 0, transform: `translate(${staff.meterX} 126) scale(0.86 1.13)` });
+      meterTop.textContent = top;
+      staticLayer.appendChild(meterTop);
+
+      const meterBottom = el("text", { class: "time-number", x: 0, y: 0, transform: `translate(${staff.meterX} 170) scale(0.86 1.13)` });
+      meterBottom.textContent = bottom;
+      staticLayer.appendChild(meterBottom);
+
+      const notes = noteObjects();
+      const beatsInBar = top;
+      const total = totalBeats(notes);
+      const start = 230;
+      const end = staff.right;
+      for (let beat = beatsInBar; beat < total - 0.01; beat += beatsInBar) {
+        const x = start + (beat / total) * (end - start);
+        staticLayer.appendChild(el("line", { class: "bar-line", x1: x, y1: staff.top, x2: x, y2: staff.bottom }));
+      }
+
+      staticLayer.appendChild(el("line", { class: "bar-line", x1: staff.right - 9, y1: staff.top, x2: staff.right - 9, y2: staff.bottom }));
+      staticLayer.appendChild(el("line", { class: "bar-line", x1: staff.right, y1: staff.top, x2: staff.right, y2: staff.bottom, "stroke-width": 4.2 }));
+    }
+
+    function drawZones() {
+      zonesLayer.innerHTML = "";
+      if (state.screen !== "compose") return;
+      Object.entries(noteY).forEach(([name, y]) => {
+        const zone = el("rect", { class: "note-zone", x: 224, y: y - 8, width: 690, height: 16, rx: 8 });
+        zone.dataset.note = name;
+        zone.addEventListener("click", () => {
+          if (state.screen === "compose") placeAttempt(name);
+        });
+        zonesLayer.appendChild(zone);
+      });
+    }
+
+    function drawSlots() {
+      slotLayer.innerHTML = "";
+      if (state.screen !== "compose") return;
+      const notes = noteObjects();
+      notes.forEach((_, index) => {
+        const x = state.positions[index];
+        const mark = el("line", {
+          class: `slot-mark ${index === state.placed.length ? "active" : ""}`,
+          x1: x,
+          x2: x,
+          y1: 82,
+          y2: 238
+        });
+        slotLayer.appendChild(mark);
+      });
+    }
+
+    function stemDirection(note, stemSpec) {
+      return stemSpec?.direction || stemSpec || (note.y < staff.middle ? "down" : "up");
+    }
+
+    function stemEnd(note, stemSpec) {
+      return stemSpec?.beamY ?? (stemDirection(note, stemSpec) === "down" ? note.y + 60 : note.y - 60);
+    }
+
+    function stemX(note, x, stemSpec) {
+      return stemDirection(note, stemSpec) === "down" ? x - 10.2 : x + 10.2;
+    }
+
+    function ledgerYs(note) {
+      const ys = [];
+      if (note.y > staff.bottom) {
+        for (let y = staff.bottom + staff.gap; y <= note.y + 0.1; y += staff.gap) ys.push(y);
+      }
+      if (note.y < staff.top) {
+        for (let y = staff.top - staff.gap; y >= note.y - 0.1; y -= staff.gap) ys.push(y);
+      }
+      return ys;
+    }
+
+    function noteMarkup(note, x, stemSpec) {
+      const direction = stemDirection(note, stemSpec);
+      const stemY = stemEnd(note, stemSpec);
+      const xStem = stemX(note, x, stemSpec);
+      const group = el("g");
+      ledgerYs(note).forEach((y) => {
+        group.appendChild(el("line", { class: "ledger", x1: x - 28, y1: y, x2: x + 28, y2: y }));
+      });
+      if (note.duration !== "whole") {
+        group.appendChild(el("line", {
+          class: "note-stem",
+          x1: xStem,
+          y1: note.y + (direction === "down" ? -1 : 1),
+          x2: xStem,
+          y2: stemY
+        }));
+      }
+      const head = el("ellipse", {
+        class: `note-head ${note.duration === "half" ? "open" : ""}`,
+        cx: x,
+        cy: note.y,
+        rx: 12.4,
+        ry: 8.1,
+        transform: `rotate(-18 ${x} ${note.y})`
+      });
+      group.appendChild(head);
+      return group;
+    }
+
+    function drawNotes(mode = state.screen) {
+      notesLayer.innerHTML = "";
+      labelLayer.innerHTML = "";
+      const notes = mode === "compose" ? state.placed : noteObjects();
+      const data = frame();
+      const beamSpecs = {};
+      if (data.beams) {
+        data.beams.forEach(([start, end]) => {
+          const groupNotes = notes.slice(start, end + 1);
+          if (groupNotes.length !== end - start + 1) return;
+          const direction = groupNotes.some((note) => note.y < staff.middle) ? "down" : "up";
+          const beamY = direction === "down"
+            ? Math.max(...groupNotes.map((note) => stemEnd(note, direction)))
+            : Math.min(...groupNotes.map((note) => stemEnd(note, direction)));
+          for (let index = start; index <= end; index += 1) {
+            beamSpecs[index] = { direction, beamY };
+          }
+        });
+      }
+      notes.forEach((note, index) => {
+        notesLayer.appendChild(noteMarkup(note, state.positions[index], beamSpecs[index]));
+      });
+
+      if (data.beams) {
+        data.beams.forEach(([start, end]) => {
+          if (!notes[start] || !notes[end]) return;
+          const direction = beamSpecs[start]?.direction || "up";
+          const down = direction === "down";
+          const beamY = beamSpecs[start]?.beamY ?? stemEnd(notes[start], direction);
+          notesLayer.appendChild(el("line", {
+            class: "beam",
+            x1: state.positions[start] + (down ? -10.2 : 10.2),
+            y1: beamY,
+            x2: state.positions[end] + (down ? -10.2 : 10.2),
+            y2: beamY
+          }));
+        });
+      }
+
+      if (data.slurs) {
+        data.slurs.forEach(([start, end]) => {
+          if (!notes[start] || !notes[end]) return;
+          const groupNotes = notes.slice(start, end + 1);
+          const isSmallLink = end - start === 1;
+          const downStems = groupNotes.filter((note, offset) => {
+            const index = start + offset;
+            return stemDirection(note, beamSpecs[index]) === "down";
+          }).length;
+          const slurBelow = downStems < groupNotes.length / 2;
+          const left = state.positions[start] - 11;
+          const right = state.positions[end] + 11;
+          const sideGap = isSmallLink ? 17 : 20;
+          const curveDepth = isSmallLink ? 12 : 16;
+          const startY = notes[start].y + (slurBelow ? sideGap : -sideGap);
+          const endY = notes[end].y + (slurBelow ? sideGap : -sideGap);
+          const controlY = slurBelow
+            ? Math.max(startY, endY) + curveDepth
+            : Math.min(startY, endY) - curveDepth;
+          const controlInset = Math.max(24, Math.min(44, (right - left) * 0.32));
+          const d = `M ${left} ${startY} C ${left + controlInset} ${controlY}, ${right - controlInset} ${controlY}, ${right} ${endY}`;
+          const slur = el("path", {
+            class: "slur",
+            d
+          });
+          notesLayer.appendChild(slur);
+        });
+      }
+
+      if (mode === "names") {
+        noteObjects().forEach((note, index) => {
+          const y = stemDirection(note, beamSpecs[index]) === "down"
+            ? Math.max(58, note.y - 30)
+            : Math.min(248, note.y + 38);
+          const text = el("text", { class: "name-label", x: state.positions[index], y });
+          text.textContent = index < state.answerIndex ? note.name : "";
+          labelLayer.appendChild(text);
+        });
+        highlightCurrentNote();
+      }
+
+      if (mode === "rhythm") {
+        noteObjects().forEach((note, index) => {
+          const text = el("text", { class: "rhythm-label", x: state.positions[index], y: 74 });
+          text.textContent = index < state.answerIndex ? note.rhythm : "";
+          labelLayer.appendChild(text);
+        });
+        highlightCurrentNote();
+      }
+    }
+
+    function highlightCurrentNote() {
+      const x = state.positions[state.answerIndex];
+      const note = noteObjects()[state.answerIndex];
+      if (!note) return;
+      labelLayer.appendChild(el("ellipse", {
+        class: "active-note-ring",
+        cx: x,
+        cy: note.y,
+        rx: 28,
+        ry: 20
+      }));
+    }
+
+    function refreshStaff() {
+      computePositions();
+      drawStaticStaff();
+      drawSlots();
+      drawNotes();
+      drawZones();
+    }
+
+    function updateMetrics() {
+      hintCount.textContent = state.hints;
+      tryCount.textContent = state.tries;
+      const score = Math.max(30, 100 - state.hints * 16 - state.tries * 8);
+      selfScore.textContent = `${score}%`;
+    }
+
+    function setJourney(percent) {
+      journeyFill.style.width = `${percent}%`;
+      journeyRunner.style.left = `${percent}%`;
+    }
+
+    function setStep(screen) {
+      const order = ["compose", "names", "rhythm", "piece"];
+      document.querySelectorAll(".step-item").forEach((step) => {
+        const i = order.indexOf(step.dataset.step);
+        const current = order.indexOf(screen);
+        step.classList.toggle("done", i < current);
+        step.classList.toggle("active", i === current);
+      });
+      document.querySelectorAll(".map-node").forEach((node) => {
+        const i = order.indexOf(node.dataset.mapStep);
+        const current = order.indexOf(screen);
+        node.classList.toggle("done", i < current);
+        node.classList.toggle("active", i === current);
+      });
+      setJourney((order.indexOf(screen) / (order.length - 1)) * 100);
+    }
+
+    function setScreen(screen) {
+      state.screen = screen;
+      state.answerIndex = 0;
+      setStep(screen);
+      gameView.classList.toggle("hidden", screen === "piece");
+      finalView.classList.toggle("active", screen === "piece");
+      noteTray.style.display = screen === "compose" ? "" : "none";
+      answerGrid.innerHTML = "";
+      reminderRow.innerHTML = "";
+
+      if (screen === "compose") {
+        const name = currentName();
+        document.getElementById("taskTitle").textContent = `Поставь: ${name}`;
+        document.getElementById("taskText").textContent = "Кликни по нужной линейке или между линейками. Можно тянуть нотку снизу.";
+        statusLine.textContent = frame().taskStart;
+        document.getElementById("hintButton").hidden = false;
+        document.getElementById("resetButton").hidden = false;
+        refreshStaff();
+      }
+
+      if (screen === "names") {
+        document.getElementById("taskTitle").textContent = "Назови ноты";
+        document.getElementById("taskText").textContent = "Нажимай карточки в том же порядке, как стоят ноты. Название появится прямо под своей ноткой.";
+        statusLine.textContent = "Назови первую ноту.";
+        document.getElementById("hintButton").hidden = false;
+        document.getElementById("resetButton").hidden = false;
+        buildCards(noteObjects().map((note) => note.name), chooseName);
+        refreshStaff();
+      }
+
+      if (screen === "rhythm") {
+        document.getElementById("taskTitle").textContent = "Прочитай ритм";
+        document.getElementById("taskText").textContent = "Нажимай ритмослоги в порядке нот. Ритмослог появится над своей ноткой.";
+        statusLine.textContent = "Поставь ритмослог над первой ноткой.";
+        document.getElementById("hintButton").hidden = false;
+        document.getElementById("resetButton").hidden = false;
+        buildCards(noteObjects().map((note) => note.rhythm), chooseRhythm);
+        frame().reminders.forEach((text) => {
+          const item = document.createElement("span");
+          item.className = "reminder";
+          item.textContent = text;
+          reminderRow.appendChild(item);
+        });
+        refreshStaff();
+      }
+
+      if (screen === "piece") {
+        document.getElementById("taskTitle").textContent = "Ура!";
+        document.getElementById("taskText").textContent = "Ру получил морковки. Басовая игра пройдена.";
+        document.getElementById("hintButton").hidden = true;
+        document.getElementById("resetButton").hidden = true;
+        buildFinal();
+      }
+    }
+
+    function currentName() {
+      return noteObjects()[state.placed.length]?.name || "готово";
+    }
+
+    function clearSoftHint() {
+      window.clearTimeout(softHelpTimer);
+      document.querySelectorAll(".note-zone").forEach((zone) => zone.classList.remove("soft-hint"));
+    }
+
+    function clearAllNoteHints() {
+      clearSoftHint();
+      document.querySelectorAll(".note-zone").forEach((zone) => zone.classList.remove("hint"));
+    }
+
+    function showSoftHint(name) {
+      clearSoftHint();
+      document.querySelectorAll(".note-zone").forEach((zone) => {
+        zone.classList.toggle("soft-hint", zone.dataset.note === name);
+      });
+      softHelpTimer = window.setTimeout(clearSoftHint, 1500);
+    }
+
+    function showPersistentHint(name) {
+      clearSoftHint();
+      document.querySelectorAll(".note-zone").forEach((zone) => {
+        zone.classList.toggle("hint", zone.dataset.note === name);
+      });
+    }
+
+    function ensureAudioContext() {
+      try {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return null;
+        audioContext = audioContext || new AudioContextClass();
+        if (audioContext.state === "suspended") audioContext.resume();
+        return audioContext;
+      } catch {
+        return null;
+      }
+    }
+
+    function playTone(frequency, startOffset = 0.01, duration = 0.34, volume = 0.13, type = "triangle") {
+      const context = ensureAudioContext();
+      if (!context || !frequency) return;
+      try {
+        const now = context.currentTime + startOffset;
+        const oscillator = context.createOscillator();
+        const filter = context.createBiquadFilter();
+        const gain = context.createGain();
+
+        oscillator.type = type;
+        oscillator.frequency.setValueAtTime(frequency, now);
+        filter.type = "lowpass";
+        filter.frequency.setValueAtTime(1500, now);
+
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(volume, now + 0.025);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+        oscillator.connect(filter);
+        filter.connect(gain);
+        gain.connect(context.destination);
+        oscillator.start(now);
+        oscillator.stop(now + duration + 0.04);
+      } catch {
+        // Sound is optional; the game stays playable if a browser blocks audio.
+      }
+    }
+
+    function playNote(note) {
+      const frequency = noteFrequency[note.name];
+      const duration = noteSoundLength[note.duration] || 0.36;
+      playTone(frequency, 0.01, duration, 0.15, "triangle");
+    }
+
+    function playCelebrationSound() {
+      [
+        [523.25, 0.01],
+        [659.25, 0.09],
+        [783.99, 0.17],
+        [1046.5, 0.27]
+      ].forEach(([frequency, offset]) => {
+        playTone(frequency, offset, 0.28, 0.075, "sine");
+      });
+    }
+
+    function placeAttempt(name) {
+      if (state.placed.length >= noteObjects().length) return;
+      const expected = currentName();
+      if (name !== expected) {
+        state.tries += 1;
+        statusLine.textContent = `Пока не ${expected}. Попробуй другое место на стане.`;
+        showSoftHint(expected);
+        updateMetrics();
+        return;
+      }
+      clearAllNoteHints();
+      const nextNote = noteObjects()[state.placed.length];
+      state.placed.push(nextNote);
+      playNote(nextNote);
+      const next = currentName();
+      statusLine.textContent = next !== "готово" ? `Верно. Теперь поставь: ${next}.` : "Ноты собраны.";
+      document.getElementById("taskTitle").textContent = next !== "готово" ? `Поставь: ${next}` : "Ноты собраны";
+      dragNoteName.textContent = next;
+      drawSlots();
+      drawNotes("compose");
+      updateMetrics();
+      if (state.placed.length === noteObjects().length) {
+        reward(1);
+        statusLine.textContent = "Ноты готовы. Теперь назови их.";
+        setTimeout(() => setScreen("names"), 520);
+      }
+    }
+
+    function buildCards(values, onChoose) {
+      const shuffled = [...values].sort(() => Math.random() - 0.5);
+      shuffled.forEach((value) => {
+        const card = document.createElement("button");
+        card.className = "answer-card";
+        card.type = "button";
+        card.textContent = value;
+        card.addEventListener("click", () => onChoose(card, value));
+        answerGrid.appendChild(card);
+      });
+    }
+
+    function chooseName(card, name) {
+      const expected = noteObjects()[state.answerIndex]?.name;
+      if (name !== expected) {
+        state.tries += 1;
+        statusLine.textContent = `Сейчас нужна нота ${expected}.`;
+        updateMetrics();
+        return;
+      }
+      markCard(card);
+      state.answerIndex += 1;
+      drawNotes("names");
+      statusLine.textContent = state.answerIndex < noteObjects().length ? "Верно. Назови следующую ноту." : "Все ноты названы. Теперь прочитаем ритм.";
+      if (state.answerIndex === noteObjects().length) {
+        reward(2);
+        setTimeout(() => setScreen("rhythm"), 520);
+      }
+    }
+
+    function chooseRhythm(card, rhythm) {
+      const expected = noteObjects()[state.answerIndex]?.rhythm;
+      if (rhythm !== expected) {
+        state.tries += 1;
+        statusLine.textContent = `Сейчас ритмослог ${expected}.`;
+        updateMetrics();
+        return;
+      }
+      markCard(card);
+      state.answerIndex += 1;
+      drawNotes("rhythm");
+      statusLine.textContent = state.answerIndex < noteObjects().length ? "Верно. Продолжай ритм." : "Ритм собран. Ру радуется морковкам.";
+      if (state.answerIndex === noteObjects().length) {
+        reward(3);
+        celebrate();
+        setTimeout(() => setScreen("piece"), 820);
+      }
+    }
+
+    function markCard(card) {
+      card.classList.add("done");
+      card.disabled = true;
+    }
+
+    function reward(count) {
+      const src = [
+        "rabbit_roo_lowered_count_0.png?v=20260704",
+        "rabbit_roo_lowered_count_1.png?v=20260704",
+        "rabbit_roo_lowered_count_2.png?v=20260704",
+        "rabbit_roo_lowered_count_3.png?v=20260704"
+      ][count];
+      rabbitArt.src = src;
+      speech.textContent = count === 1
+        ? "Ру получил первую морковку: ноты стоят на местах."
+        : count === 2
+          ? "Вторая морковка: имена нот найдены."
+          : "Корзинка полная. Басовая игра пройдена.";
+    }
+
+    function celebrate() {
+      celebration.classList.remove("active");
+      void celebration.offsetWidth;
+      celebration.classList.add("active");
+      playCelebrationSound();
+    }
+
+    function useHint() {
+      state.hints += 1;
+      if (state.screen === "compose") {
+        const name = currentName();
+        statusLine.textContent = `Подсказка: сейчас нужна нота ${name}.`;
+        showPersistentHint(name);
+      }
+      if (state.screen === "names") {
+        const note = noteObjects()[state.answerIndex];
+        statusLine.textContent = `Подсказка: следующая нота ${note.name}.`;
+      }
+      if (state.screen === "rhythm") {
+        const note = noteObjects()[state.answerIndex];
+        statusLine.textContent = `Подсказка: над этой ноткой будет ${note.rhythm}.`;
+      }
+      updateMetrics();
+    }
+
+    function noteFromPoint(clientX, clientY) {
+      const rect = staffShell.getBoundingClientRect();
+      const y = ((clientY - rect.top) / rect.height) * 330;
+      let best = null;
+      Object.entries(noteY).forEach(([name, value]) => {
+        const dist = Math.abs(value - y);
+        if (!best || dist < best.dist) best = { name, dist };
+      });
+      return best?.name;
+    }
+
+    function startDrag(event) {
+      if (state.screen !== "compose" || currentName() === "готово") return;
+      state.dragging = true;
+      dragNote.classList.add("dragging");
+      moveDrag(event);
+      dragNote.setPointerCapture?.(event.pointerId);
+    }
+
+    function moveDrag(event) {
+      if (!state.dragging) return;
+      dragNote.style.left = `${event.clientX}px`;
+      dragNote.style.top = `${event.clientY}px`;
+    }
+
+    function endDrag(event) {
+      if (!state.dragging) return;
+      state.dragging = false;
+      dragNote.classList.remove("dragging");
+      dragNote.style.left = "";
+      dragNote.style.top = "";
+      const rect = staffShell.getBoundingClientRect();
+      const inside = event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom;
+      if (inside) placeAttempt(noteFromPoint(event.clientX, event.clientY));
+    }
+
+    function routeNextInfo() {
+      const demoQuery = demoMode ? "&demo=1" : "";
+      const reviewQuery = reviewMode ? "&review=1" : "";
+      if (routeStartKey === currentKey) {
+        return {
+          label: "Перейти в скрипичный ключ",
+          url: `two_note_link_game.html?start=${routeStartKey}&frame=${state.frameIndex}${demoQuery}${reviewQuery}`
+        };
+      }
+      if (reviewMode) {
+        return {
+          label: "В Домик Ру",
+          url: `roo_student_home.html?start=${routeStartKey}&review=1`
+        };
+      }
+      return {
+        label: "Звезда дня",
+        url: `roo_student_home.html?done=1&start=${routeStartKey}&frame=${state.frameIndex}${demoQuery}`
+      };
+    }
+
+    function buildFinal() {
+      if (!reviewMode) saveCompletion(state.frameIndex);
+      if (!reviewMode && routeStartKey !== currentKey) awardDayStar(state.frameIndex);
+      renderFrameTabs();
+      const firstKeyDone = routeStartKey === currentKey;
+      document.getElementById("finalTitle").textContent = firstKeyDone ? "Басовый ключ готов!" : "Ура! Ру получил звезду дня.";
+      document.getElementById("finalText").textContent = firstKeyDone
+        ? "Теперь те же нотки в скрипичном ключе."
+        : "Скрипичный и басовый ключи пройдены.";
+      const nextButton = document.getElementById("nextFrameButton");
+      const routeInfo = routeNextInfo();
+      nextButton.classList.remove("locked-action");
+      nextButton.textContent = routeInfo.label;
+      nextButton.title = "";
+      const grid = document.getElementById("pieceGrid");
+      grid.innerHTML = "";
+      setStep("piece");
+    }
+
+    function resetFrame(keepIndex = true) {
+      state.placed = [];
+      state.hints = 0;
+      state.tries = 0;
+      state.answerIndex = 0;
+      state.dragging = false;
+      rabbitArt.src = "rabbit_roo_lowered_count_0.png?v=20260704";
+      celebration.classList.remove("active");
+      speech.textContent = frame().speech;
+      document.getElementById("brandTitle").textContent = frame().title;
+      document.getElementById("brandSubtitle").textContent = frame().subtitle;
+      document.getElementById("lessonTitle").textContent = frame().lessonTitle;
+      document.getElementById("lessonNote").textContent = frame().lessonNote;
+      dragNoteName.textContent = currentName();
+      clearAllNoteHints();
+      updateMetrics();
+      setScreen("compose");
+      if (keepIndex) renderFrameTabs();
+    }
+
+    function renderFrameTabs() {
+      const list = document.getElementById("frameList");
+      list.innerHTML = "";
+      frames.forEach((item, index) => {
+        const info = frameLockInfo(index);
+        const locked = info.locked;
+        const button = document.createElement("button");
+        button.className = `frame-tab ${index === state.frameIndex ? "active" : ""} ${locked ? "locked" : ""}`;
+        button.type = "button";
+        button.dataset.tooltip = locked ? info.message : "";
+        button.title = locked ? info.message : "";
+        button.dataset.locked = locked ? "true" : "false";
+        const lockSvg = '<svg class="frame-lock-svg" viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="10.5" width="11" height="8" rx="2"></rect><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"></path></svg>';
+        button.innerHTML = `<span class="frame-number">${locked ? lockSvg : index + 1}</span><span>${item.short}</span>`;
+        button.addEventListener("click", () => {
+          if (locked) {
+            showLockedMessage(info.message);
+            return;
+          }
+          state.frameIndex = index;
+          resetFrame();
+        });
+        list.appendChild(button);
+      });
+    }
+
+    function nextFrame() {
+      window.location.href = routeNextInfo().url;
+    }
+
+    function demoWait(ms) {
+      return new Promise((resolve) => window.setTimeout(resolve, ms));
+    }
+
+    function demoCard(value) {
+      return [...answerGrid.querySelectorAll(".answer-card:not(:disabled)")]
+        .find((card) => card.textContent.trim() === value);
+    }
+
+    async function runDemo() {
+      statusLine.textContent = "Показываю прохождение: сначала соберу ноты.";
+      await demoWait(520);
+      for (const note of noteObjects()) {
+        placeAttempt(note.name);
+        await demoWait(360);
+      }
+
+      await demoWait(760);
+      statusLine.textContent = "Показываю прохождение: теперь называю ноты.";
+      for (const note of noteObjects()) {
+        const card = demoCard(note.name);
+        if (card) chooseName(card, note.name);
+        await demoWait(320);
+      }
+
+      await demoWait(760);
+      statusLine.textContent = "Показываю прохождение: теперь собираю ритм.";
+      for (const note of noteObjects()) {
+        const card = demoCard(note.rhythm);
+        if (card) chooseRhythm(card, note.rhythm);
+        await demoWait(320);
+      }
+
+      await demoWait(1500);
+      nextFrame();
+    }
+
+    document.getElementById("hintButton").addEventListener("click", useHint);
+    document.getElementById("resetButton").addEventListener("click", () => resetFrame());
+    document.getElementById("againButton").addEventListener("click", () => resetFrame());
+    document.getElementById("nextFrameButton").addEventListener("click", nextFrame);
+    dragNote.addEventListener("pointerdown", startDrag);
+    window.addEventListener("pointermove", moveDrag);
+    window.addEventListener("pointerup", endDrag);
+
+    renderFrameTabs();
+    renderStarBoard();
+    resetFrame();
+    if (demoMode) {
+      window.setTimeout(runDemo, 700);
+    }
+  </script>
+</body>
+</html>
