@@ -7,7 +7,7 @@
   <style>
     @font-face {
       font-family: "Bravura";
-      src: url("assets/Bravura.otf") format("opentype");
+      src: url("Bravura.otf") format("opentype"), url("assets/Bravura.otf") format("opentype");
     }
 
     :root {
@@ -53,6 +53,49 @@
       grid-template-columns: minmax(260px, 330px) minmax(0, 1fr);
       gap: 18px;
       padding: 20px;
+    }
+
+    body:not(.review-mode) .app {
+      max-width: 1180px;
+      margin: 0 auto;
+      grid-template-columns: minmax(0, 1fr);
+      padding: 18px;
+    }
+
+    body:not(.review-mode) .side,
+    body:not(.review-mode) .journey,
+    body:not(.review-mode) .metrics {
+      display: none;
+    }
+
+    body:not(.review-mode) .lesson {
+      max-width: 1040px;
+      margin: 0 auto;
+      border-radius: 10px;
+    }
+
+    body:not(.review-mode) .lesson-head {
+      padding: 24px 26px 8px;
+      border-bottom: 0;
+      background: transparent;
+    }
+
+    body:not(.review-mode) .lesson-title {
+      font-size: clamp(25px, 3vw, 34px);
+    }
+
+    body:not(.review-mode) .lesson-note {
+      max-width: 660px;
+      font-size: 16px;
+      line-height: 1.38;
+    }
+
+    body:not(.review-mode) .work {
+      padding-top: 10px;
+    }
+
+    body:not(.review-mode) .lesson-head {
+      display: none;
     }
 
     .side {
@@ -347,6 +390,43 @@
       overflow: hidden;
     }
 
+    body.zoom-mode {
+      overflow: hidden;
+    }
+
+    body.zoom-mode .app {
+      padding: 0;
+      max-width: none;
+    }
+
+    body.zoom-mode .lesson {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      min-height: 100vh;
+      border-radius: 0;
+      overflow: auto;
+    }
+
+    body.zoom-mode .board {
+      min-height: calc(100vh - 160px);
+    }
+
+    body.zoom-mode .staff-shell {
+      min-height: min(66vh, 560px);
+    }
+
+    body.zoom-mode .staff-svg {
+      height: min(66vh, 560px);
+    }
+
+    body.zoom-mode .task-bar {
+      position: sticky;
+      top: 0;
+      z-index: 35;
+      box-shadow: 0 10px 22px rgba(27, 45, 54, 0.1);
+    }
+
     .lesson-head {
       display: flex;
       justify-content: space-between;
@@ -530,16 +610,47 @@
       padding: 20px 22px 24px;
     }
 
+    .roo-guide {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+      padding: 12px 14px;
+      border: 1px solid rgba(12, 125, 117, 0.16);
+      border-radius: 8px;
+      background: linear-gradient(180deg, rgba(255, 254, 250, 0.96), rgba(238, 248, 244, 0.92));
+      box-shadow: 0 10px 24px rgba(27, 45, 54, 0.08);
+    }
+
+    .roo-guide-art {
+      width: 60px;
+      height: 60px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: 50% 18%;
+      background: #fff7df;
+      border: 2px solid rgba(12, 125, 117, 0.16);
+      box-shadow: 0 6px 14px rgba(27, 45, 54, 0.12);
+    }
+
+    .roo-guide-bubble {
+      color: var(--ink);
+      font-size: 17px;
+      line-height: 1.34;
+      font-weight: 850;
+    }
+
     .task-bar {
       display: flex;
-      justify-content: space-between;
-      gap: 16px;
+      justify-content: flex-end;
+      gap: 10px;
       align-items: center;
-      padding: 14px 16px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.94);
-      margin-bottom: 16px;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      margin: -2px 0 14px;
     }
 
     .task-main {
@@ -796,9 +907,11 @@
     }
 
     .note-symbol {
-      font-family: "Bravura", serif;
-      font-size: 34px;
-      line-height: 1;
+      width: 28px;
+      height: 38px;
+      display: block;
+      flex: 0 0 auto;
+      color: var(--ink);
     }
 
     .answer-card {
@@ -873,6 +986,23 @@
       border-radius: 8px;
       background: #f6fbf9;
       margin-bottom: 16px;
+    }
+
+    .final-hero .task-controls {
+      align-items: stretch;
+      min-width: min(100%, 300px);
+    }
+
+    .final-hero .btn.primary {
+      min-height: 54px;
+      padding: 14px 18px;
+      font-size: 18px;
+      box-shadow: 0 12px 22px rgba(12, 125, 117, 0.18);
+    }
+
+    .final-hero .btn.primary::after {
+      content: " →";
+      font-weight: 950;
     }
 
     .final-hero strong {
@@ -1092,6 +1222,31 @@
         justify-content: flex-start;
       }
 
+      .task-controls .btn {
+        flex: 1 1 120px;
+      }
+
+      .board {
+        min-height: 470px;
+        padding: 12px;
+      }
+
+      .staff-shell {
+        min-height: 270px;
+      }
+
+      .staff-svg {
+        height: 270px;
+      }
+
+      body.zoom-mode .staff-shell {
+        min-height: min(72vh, 620px);
+      }
+
+      body.zoom-mode .staff-svg {
+        height: min(72vh, 620px);
+      }
+
       .piece-grid {
         grid-template-columns: 1fr;
       }
@@ -1126,7 +1281,7 @@
         <div class="rabbit-scene">
           <img class="rabbit-art" id="rabbitArt" src="rabbit_roo_lowered_count_0.png?v=20260704" alt="Кролик Ру с пустой корзинкой">
         </div>
-        <div class="speech" id="speech">Собери маленькие связки и помоги Ру получить морковку.</div>
+        <div class="speech" id="speech">Собери маленькие связки и помоги мне получить морковку.</div>
       </section>
 
       <nav class="panel steps" aria-label="Шаги">
@@ -1141,8 +1296,8 @@
       <div class="lesson">
         <header class="lesson-head">
           <div>
-            <h2 class="lesson-title" id="lessonTitle">Собери 2 такта</h2>
-            <div class="lesson-note" id="lessonNote">Размер 2/4. В каждом такте две маленькие связки: ти-ти, ти-ти.</div>
+            <h2 class="lesson-title" id="lessonTitle">Поставь нотки по порядку</h2>
+            <div class="lesson-note" id="lessonNote">Внизу появляется нотка. Нажимай на место на пяти линейках или перетаскивай нотку.</div>
           </div>
           <div class="metrics" aria-label="Статистика">
             <div class="metric"><strong id="hintCount">0</strong><span>подсказок</span></div>
@@ -1183,14 +1338,20 @@
         </div>
 
         <div class="work">
+          <div class="roo-guide" id="rooGuide">
+            <img class="roo-guide-art" id="rooGuideArt" src="rabbit_roo_lowered_count_0.png?v=20260704" alt="">
+            <div class="roo-guide-bubble" id="rooGuideText">Привет! Я Ру. Давай поставим первую нотку.</div>
+          </div>
+
           <div class="task-bar">
-            <div>
+            <div class="task-copy" hidden>
               <div class="task-main" id="taskTitle">Поставь: до</div>
-              <div class="task-sub" id="taskText">Кликни по нужной линейке или между линейками. Можно тянуть нотку снизу.</div>
+              <div class="task-sub" id="taskText">Нотка 1 из 8.</div>
             </div>
             <div class="task-controls">
               <button class="btn" id="hintButton" type="button">Подсказать</button>
               <button class="btn" id="resetButton" type="button">Сбросить</button>
+              <button class="btn zoom-btn" id="zoomButton" type="button">Увеличить</button>
             </div>
           </div>
 
@@ -1208,14 +1369,18 @@
 
               <div class="note-tray" id="noteTray">
                 <div class="drag-note" id="dragNote" role="button" tabindex="0">
-                  <span class="note-symbol">&#119134;</span>
+                  <svg class="note-symbol" viewBox="0 0 40 52" aria-hidden="true">
+                    <ellipse cx="16" cy="38" rx="9" ry="6.5" fill="currentColor" transform="rotate(-18 16 38)"></ellipse>
+                    <path d="M24 37V8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path>
+                    <path d="M24 8C31 10 34 14 33 19" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path>
+                  </svg>
                   <span>Нотка: <span id="dragNoteName">до</span></span>
                 </div>
               </div>
 
               <div class="answer-grid" id="answerGrid"></div>
               <div class="reminder-row" id="reminderRow"></div>
-              <div class="status-line" id="statusLine">Собери пары: до-ре, фа-соль, ми-ре, ля-соль.</div>
+              <div class="status-line" id="statusLine">Поставь нотки по очереди: до, ре, фа, соль, ми, ре, ля, соль.</div>
               <div class="celebration" id="celebration">
                 <div class="celebration-card">
                   <span class="spark"></span><span class="spark"></span><span class="spark"></span><span class="spark"></span>
@@ -1228,7 +1393,7 @@
           <div class="final-view" id="finalView">
             <div class="final-hero">
               <div>
-                <strong id="finalTitle">Ура! Ру собрал все морковки.</strong>
+                <strong id="finalTitle">Ура! Я собрал все морковки.</strong>
                 <p class="subtitle" id="finalText">Басовая игра пройдена.</p>
               </div>
               <div class="task-controls">
@@ -1266,12 +1431,6 @@
       eighth: 0.5,
       quarter: 1,
       half: 2
-    };
-
-    const durationLabel = {
-      eighth: "ти",
-      quarter: "та",
-      half: "ту"
     };
 
     const noteFrequency = {
@@ -1313,10 +1472,10 @@
         title: "Нотки-вишенки",
         short: "Нотки-вишенки",
         subtitle: "Басовый ключ. Малая октава.",
-        lessonTitle: "Собери 2 такта",
-        lessonNote: "Размер 2/4. В каждом такте две маленькие связки: ти-ти, ти-ти.",
-        speech: "Собери четыре маленькие связки из восьмых нот.",
-        taskStart: "Собери пары: до-ре, фа-соль, ми-ре, ля-соль.",
+        lessonTitle: "Поставь нотки по порядку",
+        lessonNote: "Внизу появляется нотка. Нажимай на место на пяти линейках или перетаскивай нотку. Если трудно, нажми \"Подсказать\".",
+        speech: "Я жду нотки-вишенки. Помоги поставить их на места.",
+        taskStart: "Поставь нотки по очереди: до, ре, фа, соль, ми, ре, ля, соль.",
         meter: [2, 4],
         notes: [
           ["до", "eighth", "1"], ["ре", "eighth", "и"],
@@ -1326,88 +1485,88 @@
         ],
         beams: [[0, 1], [2, 3], [4, 5], [6, 7]],
         slurs: [[0, 1], [2, 3], [4, 5], [6, 7]],
-        reminders: ["ти-ти = две восьмые на одну долю"],
+        reminders: ["Считай вслух: 1-и-2-и"],
         pieces: []
       },
       {
         title: "Солнечная дорожка",
         short: "Солнечная дорожка",
         subtitle: "Пять нот идут как лучики по ступенькам.",
-        lessonTitle: "Собери солнечную дорожку",
-        lessonNote: "Сначала узнай ноты, потом назови их и прочитай длинные длительности ритмослогами.",
-        speech: "Ру ждет солнечную дорожку из пяти нот.",
-        taskStart: "Собери мелодию: соль, фа, ми, соль, фа, ми.",
+        lessonTitle: "Поставь солнечную дорожку",
+        lessonNote: "Сначала поставь нотки на свои места. Потом сайт попросит назвать нотки и посчитать ритм.",
+        speech: "Я жду солнечную дорожку из ноток.",
+        taskStart: "Поставь нотки по очереди: соль, фа, ми, соль, фа, ми.",
         meter: [4, 4],
         notes: [["соль", "quarter", "1"], ["фа", "quarter", "2"], ["ми", "half", "3-4"], ["соль", "quarter", "1"], ["фа", "quarter", "2"], ["ми", "half", "3-4"]],
         slurs: [[0, 2], [3, 5]],
-        reminders: ["та = четверть", "ту = половинка"],
+        reminders: ["Считай: 1, 2, 3-4"],
         pieces: []
       },
       {
         title: "Слова ведут ритм",
         short: "Василек",
         subtitle: "Слова помогают вспомнить порядок нот и длительностей.",
-        lessonTitle: "Подружи ноты со словами",
-        lessonNote: "Сначала называй ноты, потом проверь ритм по словам.",
-        speech: "Ру слушает, как слова помогают считать ритм.",
-        taskStart: "Собери нотную строку для Василька.",
+        lessonTitle: "Поставь нотки для песенки",
+        lessonNote: "Сначала расставь нотки. Потом назови их и проверь ритм.",
+        speech: "Я слушаю, как слова помогают считать ритм.",
+        taskStart: "Поставь нотки для песенки \"Василек\".",
         meter: [4, 4],
         notes: [["до", "quarter", "1"], ["ре", "quarter", "2"], ["ми", "half", "3-4"], ["ре", "quarter", "1"], ["до", "quarter", "2"], ["ре", "half", "3-4"]],
         slurs: [[0, 2], [3, 5]],
-        reminders: ["Считаем длительности: та, ти-ти, ту"],
+        reminders: ["Считай вслух: 1, 2, 3-4"],
         pieces: []
       },
       {
         title: "Жучка считает шаги",
         short: "Жучка и кот",
         subtitle: "Ритм живет в словах и хлопках.",
-        lessonTitle: "Собери быстрые шаги",
-        lessonNote: "Прочитай слова, прохлопай ритм и найди ноты.",
+        lessonTitle: "Поставь быстрые нотки",
+        lessonNote: "Поставь нотки на места. Потом посчитай, где короткие звуки, а где длинные.",
         speech: "Жучка бежит мелкими шагами, а кот отвечает спокойно.",
-        taskStart: "Собери ритм: ти-ти, ти-ти, та, та, ту, ту.",
+        taskStart: "Поставь нотки по очереди: до, ре, ми, фа, соль, соль, ля, соль.",
         meter: [4, 4],
         notes: [["до", "eighth", "1"], ["ре", "eighth", "и"], ["ми", "eighth", "2"], ["фа", "eighth", "и"], ["соль", "quarter", "3"], ["соль", "quarter", "4"], ["ля", "half", "1-2"], ["соль", "half", "3-4"]],
         beams: [[0, 1], [2, 3]],
-        reminders: ["ти-ти = быстрые шаги", "та = спокойный шаг", "ту = половинка"],
+        reminders: ["Короткие нотки: 1-и, 2-и", "Длинную нотку держим до следующего счета"],
         pieces: []
       },
       {
         title: "Цок-цок",
         short: "Лошадка",
         subtitle: "Короткий мотив держит пульс и паузу.",
-        lessonTitle: "Собери цоканье",
-        lessonNote: "Обращай внимание на короткие длительности и тишину между ними.",
-        speech: "Ру слушает ровные копытца: цок, цок.",
-        taskStart: "Собери движение: соль, ля, си, ля, соль, ми.",
+        lessonTitle: "Поставь нотки лошадки",
+        lessonNote: "Сначала расставь нотки. Потом посчитай ритм: короткие звуки и остановки.",
+        speech: "Я слушаю ровные копытца: цок, цок.",
+        taskStart: "Поставь нотки по очереди: соль, ля, си, ля, соль, ми.",
         meter: [2, 4],
         notes: [["соль", "eighth", "1"], ["ля", "eighth", "и"], ["си", "quarter", "2"], ["ля", "eighth", "1"], ["соль", "eighth", "и"], ["ми", "quarter", "2"]],
         beams: [[0, 1], [3, 4]],
         slurs: [[0, 2], [3, 5]],
-        reminders: ["ти-ти = цок-цок", "после фразы можно оставить тишину"],
+        reminders: ["Считай вслух: 1-и-2", "Пауза = тихий момент"],
         pieces: []
       },
       {
         title: "Колыбелька кота",
         short: "У кота-Воркота",
-        subtitle: "Проверь порядок нот и длинные длительности.",
-        lessonTitle: "Собери колыбельку",
-        lessonNote: "Найди ноты и отметь, где стоит длинная половинка.",
-        speech: "Ру ищет короткие и длинные длительности в колыбельке.",
-        taskStart: "Собери порядок нот: ми, фа, соль, ми, ре, до.",
+        subtitle: "Проверь порядок нот и длинные звуки.",
+        lessonTitle: "Поставь нотки колыбельки",
+        lessonNote: "Сначала найди места для ноток. Потом назови их и посчитай длинные звуки.",
+        speech: "Я ищу короткие и длинные звуки в колыбельке.",
+        taskStart: "Поставь нотки по очереди: ми, фа, соль, ми, ре, до.",
         meter: [4, 4],
         notes: [["ми", "quarter", "1"], ["фа", "quarter", "2"], ["соль", "half", "3-4"], ["ми", "quarter", "1"], ["ре", "quarter", "2"], ["до", "half", "3-4"]],
         slurs: [[0, 2], [3, 5]],
-        reminders: ["та = четверть", "ту = половинка"],
+        reminders: ["Считай: 1, 2, 3-4"],
         pieces: []
       },
       {
         title: "Горка вверх-вниз",
         short: "Как под горкой",
         subtitle: "Мелодия катится вниз и снова поднимается.",
-        lessonTitle: "Собери горку",
-        lessonNote: "Отметь, где мелодия спускается, а где поднимается.",
-        speech: "Ру катится с горки и поднимается обратно.",
-        taskStart: "Собери дорожку: до, ре, ми, фа, соль, фа, ми, ре.",
+        lessonTitle: "Поставь нотки-ступеньки",
+        lessonNote: "Смотри, куда идут нотки: выше или ниже. Сначала расставь их на пяти линейках.",
+        speech: "Я качусь с горки и поднимаюсь обратно.",
+        taskStart: "Поставь нотки по очереди: до, ре, ми, фа, соль, фа, ми, ре.",
         meter: [4, 4],
         notes: [["до", "quarter", "1"], ["ре", "quarter", "2"], ["ми", "quarter", "3"], ["фа", "quarter", "4"], ["соль", "quarter", "1"], ["фа", "quarter", "2"], ["ми", "quarter", "3"], ["ре", "quarter", "4"]],
         slurs: [[0, 3], [4, 7]],
@@ -1418,10 +1577,10 @@
         title: "Шаги вверх и вниз",
         short: "Вот иду я",
         subtitle: "Ноты идут вверх, потом вниз.",
-        lessonTitle: "Собери прогулку",
-        lessonNote: "Сначала движение вверх, потом движение вниз.",
-        speech: "Ру смотрит, куда движется мелодия: вверх или вниз.",
-        taskStart: "Собери прогулку: до, ре, ми, фа, соль, фа, ми, ре.",
+        lessonTitle: "Поставь нотки-прогулку",
+        lessonNote: "Сначала нотки идут выше, потом ниже. Поставь каждую нотку на свое место.",
+        speech: "Я смотрю, куда движется мелодия: вверх или вниз.",
+        taskStart: "Поставь нотки по очереди: до, ре, ми, фа, соль, фа, ми, ре.",
         meter: [4, 4],
         notes: [["до", "quarter", "1"], ["ре", "quarter", "2"], ["ми", "quarter", "3"], ["фа", "quarter", "4"], ["соль", "quarter", "1"], ["фа", "quarter", "2"], ["ми", "quarter", "3"], ["ре", "quarter", "4"]],
         slurs: [[0, 4], [4, 7]],
@@ -1432,28 +1591,28 @@
         title: "Дождик",
         short: "Дождик",
         subtitle: "Проверь повторяющиеся ноты и длинное окончание.",
-        lessonTitle: "Собери дождик",
-        lessonNote: "Найди повтор нот и прочитай длительности ритмослогами.",
-        speech: "Ру считает капли: та, та, та, та, та, та, ту.",
-        taskStart: "Собери дождик: ля, соль, фа, фа, ми, ми, ре.",
+        lessonTitle: "Поставь нотки-дождинки",
+        lessonNote: "Найди место для каждой нотки. Потом назови нотки и посчитай ритм.",
+        speech: "Я считаю капли: 1, 2, 3, 4.",
+        taskStart: "Поставь нотки по очереди: ля, соль, фа, фа, ми, ми, ре.",
         meter: [4, 4],
         notes: [["ля", "quarter", "1"], ["соль", "quarter", "2"], ["фа", "quarter", "3"], ["фа", "quarter", "4"], ["ми", "quarter", "1"], ["ми", "quarter", "2"], ["ре", "half", "3-4"]],
         slurs: [[0, 3], [4, 6]],
-        reminders: ["та = четверть", "ту = половинка"],
+        reminders: ["Считай: 1, 2, 3, 4"],
         pieces: []
       },
       {
         title: "Ворон на ветке",
         short: "Сидит ворон",
         subtitle: "Повторяющиеся ноты нужно узнать и не перепутать.",
-        lessonTitle: "Собери повтор",
-        lessonNote: "Найди повтор одной ноты и прочитай восьмые ритмослогами.",
-        speech: "Ру ищет повтор: до-до-до-до, ре-ре-ре-до.",
-        taskStart: "Собери повтор: до, до, до, до, ре, ре, ре, до.",
+        lessonTitle: "Поставь повторяющиеся нотки",
+        lessonNote: "Здесь некоторые нотки повторяются. Сначала поставь их, потом назови по порядку.",
+        speech: "Я ищу повтор: до-до-до-до, ре-ре-ре-до.",
+        taskStart: "Поставь нотки по очереди: до, до, до, до, ре, ре, ре, до.",
         meter: [2, 4],
         notes: [["до", "eighth", "1"], ["до", "eighth", "и"], ["до", "eighth", "2"], ["до", "eighth", "и"], ["ре", "eighth", "1"], ["ре", "eighth", "и"], ["ре", "eighth", "2"], ["до", "eighth", "и"]],
         beams: [[0, 1], [2, 3], [4, 5], [6, 7]],
-        reminders: ["ти-ти = две восьмые", "повтор = та же самая нота"],
+        reminders: ["Считай вслух: 1-и-2-и", "Повтор = та же самая нота"],
         pieces: []
       }
     ];
@@ -1469,6 +1628,7 @@
     const routeStartKey = routeParams.get("start") === "treble" ? "treble" : "bass";
     const routeFrameIndex = Number(routeParams.get("frame"));
     const starStorageKey = "rooCollectedDayStars";
+    document.body.classList.toggle("review-mode", reviewMode);
 
     const state = {
       frameIndex: 0,
@@ -1508,12 +1668,23 @@
     const journeyRunner = document.getElementById("journeyRunner");
     const rabbitArt = document.getElementById("rabbitArt");
     const speech = document.getElementById("speech");
+    const rooGuideText = document.getElementById("rooGuideText");
+    const rooGuideArt = document.getElementById("rooGuideArt");
     const gameView = document.getElementById("gameView");
     const finalView = document.getElementById("finalView");
     const celebration = document.getElementById("celebration");
+    const zoomButton = document.getElementById("zoomButton");
 
     function frame() {
       return frames[state.frameIndex];
+    }
+
+    function setRooGuide(text, carrotCount = 0) {
+      if (rooGuideText) rooGuideText.textContent = text;
+      if (rooGuideArt) {
+        const count = Math.max(0, Math.min(3, carrotCount));
+        rooGuideArt.src = `rabbit_roo_lowered_count_${count}.png?v=20260704`;
+      }
     }
 
     function localDateStamp(date = new Date()) {
@@ -1627,7 +1798,7 @@
         name,
         duration,
         count,
-        rhythm: durationLabel[duration],
+        rhythm: count,
         index,
         y: noteY[name],
         beats: durationBeats[duration]
@@ -1925,10 +2096,12 @@
       if (screen === "compose") {
         const name = currentName();
         document.getElementById("taskTitle").textContent = `Поставь: ${name}`;
-        document.getElementById("taskText").textContent = "Кликни по нужной линейке или между линейками. Можно тянуть нотку снизу.";
+        document.getElementById("taskText").textContent = composeProgressText();
         statusLine.textContent = frame().taskStart;
+        setRooGuide(`Привет! Я Ру. Давай найдем нотку «${name}» и поставим ее на нотный стан.`, 0);
         document.getElementById("hintButton").hidden = false;
         document.getElementById("resetButton").hidden = false;
+        zoomButton.hidden = false;
         refreshStaff();
       }
 
@@ -1936,18 +2109,22 @@
         document.getElementById("taskTitle").textContent = "Назови ноты";
         document.getElementById("taskText").textContent = "Нажимай карточки в том же порядке, как стоят ноты. Название появится прямо под своей ноткой.";
         statusLine.textContent = "Назови первую ноту.";
+        setRooGuide("Нотки уже на месте. Давай назовем их по порядку.", 1);
         document.getElementById("hintButton").hidden = false;
         document.getElementById("resetButton").hidden = false;
+        zoomButton.hidden = false;
         buildCards(noteObjects().map((note) => note.name), chooseName);
         refreshStaff();
       }
 
       if (screen === "rhythm") {
-        document.getElementById("taskTitle").textContent = "Прочитай ритм";
-        document.getElementById("taskText").textContent = "Нажимай ритмослоги в порядке нот. Ритмослог появится над своей ноткой.";
-        statusLine.textContent = "Поставь ритмослог над первой ноткой.";
+        document.getElementById("taskTitle").textContent = "Посчитай ритм";
+        document.getElementById("taskText").textContent = "Выбирай счет для каждой нотки: 1, и, 2, и... Ответ появится над ноткой.";
+        statusLine.textContent = "Выбери счет для первой нотки.";
+        setRooGuide("Теперь считаем вслух. Я помогу держать счет над нотками.", 2);
         document.getElementById("hintButton").hidden = false;
         document.getElementById("resetButton").hidden = false;
+        zoomButton.hidden = false;
         buildCards(noteObjects().map((note) => note.rhythm), chooseRhythm);
         frame().reminders.forEach((text) => {
           const item = document.createElement("span");
@@ -1960,15 +2137,25 @@
 
       if (screen === "piece") {
         document.getElementById("taskTitle").textContent = "Ура!";
-        document.getElementById("taskText").textContent = "Ру получил морковки. Басовая игра пройдена.";
+        document.getElementById("taskText").textContent = "Я получил морковки. Басовая игра пройдена.";
+        setRooGuide("Ура! Морковки собраны. Теперь можно повесить звезду дня.", 3);
         document.getElementById("hintButton").hidden = true;
         document.getElementById("resetButton").hidden = true;
+        zoomButton.hidden = true;
+        document.body.classList.remove("zoom-mode");
+        zoomButton.textContent = "Увеличить";
         buildFinal();
       }
     }
 
     function currentName() {
       return noteObjects()[state.placed.length]?.name || "готово";
+    }
+
+    function composeProgressText() {
+      const total = noteObjects().length;
+      if (state.placed.length >= total) return "Все нотки на месте.";
+      return `Нотка ${state.placed.length + 1} из ${total}.`;
     }
 
     function clearSoftHint() {
@@ -2059,6 +2246,7 @@
       if (name !== expected) {
         state.tries += 1;
         statusLine.textContent = `Пока не ${expected}. Попробуй другое место на стане.`;
+        setRooGuide(`Почти. Сейчас нужна нотка «${expected}». Я подсветил нужное место.`, state.placed.length);
         showSoftHint(expected);
         updateMetrics();
         return;
@@ -2070,6 +2258,8 @@
       const next = currentName();
       statusLine.textContent = next !== "готово" ? `Верно. Теперь поставь: ${next}.` : "Ноты собраны.";
       document.getElementById("taskTitle").textContent = next !== "готово" ? `Поставь: ${next}` : "Ноты собраны";
+      document.getElementById("taskText").textContent = composeProgressText();
+      setRooGuide(next !== "готово" ? `Есть! Теперь найдем нотку «${next}».` : "Все нотки на месте. Переходим дальше!", Math.min(1, state.placed.length));
       dragNoteName.textContent = next;
       drawSlots();
       drawNotes("compose");
@@ -2077,6 +2267,7 @@
       if (state.placed.length === noteObjects().length) {
         reward(1);
         statusLine.textContent = "Ноты готовы. Теперь назови их.";
+        setRooGuide("Отлично! Я получил морковку. Теперь назовем нотки.", 1);
         setTimeout(() => setScreen("names"), 520);
       }
     }
@@ -2098,13 +2289,15 @@
       if (name !== expected) {
         state.tries += 1;
         statusLine.textContent = `Сейчас нужна нота ${expected}.`;
+        setRooGuide(`Я вижу другую нотку. Сейчас нужна «${expected}».`, 1);
         updateMetrics();
         return;
       }
       markCard(card);
       state.answerIndex += 1;
       drawNotes("names");
-      statusLine.textContent = state.answerIndex < noteObjects().length ? "Верно. Назови следующую ноту." : "Все ноты названы. Теперь прочитаем ритм.";
+      statusLine.textContent = state.answerIndex < noteObjects().length ? "Верно. Назови следующую ноту." : "Все ноты названы. Теперь посчитаем ритм.";
+      setRooGuide(state.answerIndex < noteObjects().length ? "Да! Теперь следующая нотка." : "Все имена найдены. Теперь посчитаем ритм.", 2);
       if (state.answerIndex === noteObjects().length) {
         reward(2);
         setTimeout(() => setScreen("rhythm"), 520);
@@ -2115,14 +2308,16 @@
       const expected = noteObjects()[state.answerIndex]?.rhythm;
       if (rhythm !== expected) {
         state.tries += 1;
-        statusLine.textContent = `Сейчас ритмослог ${expected}.`;
+        statusLine.textContent = `Сейчас нужен счет: ${expected}.`;
+        setRooGuide(`Почти. Над этой ноткой нужен счет «${expected}».`, 2);
         updateMetrics();
         return;
       }
       markCard(card);
       state.answerIndex += 1;
       drawNotes("rhythm");
-      statusLine.textContent = state.answerIndex < noteObjects().length ? "Верно. Продолжай ритм." : "Ритм собран. Ру радуется морковкам.";
+      statusLine.textContent = state.answerIndex < noteObjects().length ? "Верно. Продолжай счет." : "Ритм собран. Я радуюсь морковкам.";
+      setRooGuide(state.answerIndex < noteObjects().length ? "Верно. Считаем дальше." : "Ритм собран! Я несу морковки.", 3);
       if (state.answerIndex === noteObjects().length) {
         reward(3);
         celebrate();
@@ -2144,10 +2339,11 @@
       ][count];
       rabbitArt.src = src;
       speech.textContent = count === 1
-        ? "Ру получил первую морковку: ноты стоят на местах."
+        ? "Я получил первую морковку: ноты стоят на местах."
         : count === 2
-          ? "Вторая морковка: имена нот найдены."
+          ? "Вторая морковка у меня: имена нот найдены."
           : "Корзинка полная. Басовая игра пройдена.";
+      setRooGuide(speech.textContent, count);
     }
 
     function celebrate() {
@@ -2162,15 +2358,18 @@
       if (state.screen === "compose") {
         const name = currentName();
         statusLine.textContent = `Подсказка: сейчас нужна нота ${name}.`;
+        setRooGuide(`Я подсветил место для нотки «${name}».`, state.placed.length);
         showPersistentHint(name);
       }
       if (state.screen === "names") {
         const note = noteObjects()[state.answerIndex];
         statusLine.textContent = `Подсказка: следующая нота ${note.name}.`;
+        setRooGuide(`Сейчас карточка «${note.name}».`, 1);
       }
       if (state.screen === "rhythm") {
         const note = noteObjects()[state.answerIndex];
-        statusLine.textContent = `Подсказка: над этой ноткой будет ${note.rhythm}.`;
+        statusLine.textContent = `Подсказка: над этой ноткой будет счет ${note.rhythm}.`;
+        setRooGuide(`Сейчас нужен счет «${note.rhythm}».`, 2);
       }
       updateMetrics();
     }
@@ -2216,7 +2415,7 @@
       const reviewQuery = reviewMode ? "&review=1" : "";
       if (routeStartKey === currentKey) {
         return {
-          label: "Перейти в скрипичный ключ",
+          label: "Идем в скрипичный ключ",
           url: `two_note_link_game.html?start=${routeStartKey}&frame=${state.frameIndex}${demoQuery}${reviewQuery}`
         };
       }
@@ -2227,7 +2426,7 @@
         };
       }
       return {
-        label: "Звезда дня",
+        label: "Повесить звезду на доску",
         url: `roo_student_home.html?done=1&start=${routeStartKey}&frame=${state.frameIndex}${demoQuery}`
       };
     }
@@ -2237,12 +2436,17 @@
       if (!reviewMode && routeStartKey !== currentKey) awardDayStar(state.frameIndex);
       renderFrameTabs();
       const firstKeyDone = routeStartKey === currentKey;
-      document.getElementById("finalTitle").textContent = firstKeyDone ? "Басовый ключ готов!" : "Ура! Ру получил звезду дня.";
+      document.getElementById("finalTitle").textContent = firstKeyDone ? "Басовый ключ готов!" : "Оба ключа готовы!";
       document.getElementById("finalText").textContent = firstKeyDone
-        ? "Теперь те же нотки в скрипичном ключе."
-        : "Скрипичный и басовый ключи пройдены.";
+        ? "Теперь найдем эти же нотки в скрипичном ключе."
+        : "Я собрал морковки. Пора повесить звезду на доску наград.";
       const nextButton = document.getElementById("nextFrameButton");
       const routeInfo = routeNextInfo();
+      const againButton = document.getElementById("againButton");
+      againButton.hidden = !reviewMode;
+      setRooGuide(firstKeyDone
+        ? "Басовый ключ готов! Теперь идем в скрипичный ключ."
+        : "Оба ключа готовы! Пойдем повесим звезду на доску наград.", 3);
       nextButton.classList.remove("locked-action");
       nextButton.textContent = routeInfo.label;
       nextButton.title = "";
@@ -2269,6 +2473,12 @@
       updateMetrics();
       setScreen("compose");
       if (keepIndex) renderFrameTabs();
+    }
+
+    function toggleZoomMode() {
+      const expanded = document.body.classList.toggle("zoom-mode");
+      zoomButton.textContent = expanded ? "Вернуться" : "Увеличить";
+      if (expanded) window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     function renderFrameTabs() {
@@ -2327,7 +2537,7 @@
       }
 
       await demoWait(760);
-      statusLine.textContent = "Показываю прохождение: теперь собираю ритм.";
+      statusLine.textContent = "Показываю прохождение: теперь собираю счет.";
       for (const note of noteObjects()) {
         const card = demoCard(note.rhythm);
         if (card) chooseRhythm(card, note.rhythm);
@@ -2340,6 +2550,7 @@
 
     document.getElementById("hintButton").addEventListener("click", useHint);
     document.getElementById("resetButton").addEventListener("click", () => resetFrame());
+    zoomButton.addEventListener("click", toggleZoomMode);
     document.getElementById("againButton").addEventListener("click", () => resetFrame());
     document.getElementById("nextFrameButton").addEventListener("click", nextFrame);
     dragNote.addEventListener("pointerdown", startDrag);
