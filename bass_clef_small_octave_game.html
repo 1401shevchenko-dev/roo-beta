@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
   <title>Игры Ру: басовый ключ малой октавы</title>
   <style>
     @font-face {
@@ -35,7 +35,7 @@
 
     body {
       margin: 0;
-      min-height: 100vh;
+      min-height: 100dvh;
       color: var(--ink);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background:
@@ -735,7 +735,7 @@
       background: linear-gradient(180deg, #fff, #fbfefe);
       border: 1px solid #dce8ed;
       overflow: hidden;
-      touch-action: none;
+      touch-action: pan-y pinch-zoom;
     }
 
     .staff-svg {
@@ -1210,6 +1210,35 @@
     }
 
     @media (max-width: 760px) {
+      .app,
+      body:not(.review-mode) .app {
+        padding: 0;
+      }
+
+      .lesson,
+      body:not(.review-mode) .lesson {
+        min-height: 100dvh;
+        border: 0;
+        border-radius: 0;
+      }
+
+      .work {
+        padding: 12px;
+      }
+
+      .roo-guide {
+        padding: 10px;
+      }
+
+      .roo-guide-art {
+        width: 48px;
+        height: 48px;
+      }
+
+      .roo-guide-bubble {
+        font-size: 15px;
+      }
+
       .lesson-head,
       .task-bar,
       .final-hero {
@@ -1224,6 +1253,7 @@
 
       .task-controls .btn {
         flex: 1 1 120px;
+        min-height: 46px;
       }
 
       .board {
@@ -1240,11 +1270,31 @@
       }
 
       body.zoom-mode .staff-shell {
-        min-height: min(72vh, 620px);
+        min-height: 332px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        touch-action: pan-x pan-y pinch-zoom;
+        -webkit-overflow-scrolling: touch;
       }
 
       body.zoom-mode .staff-svg {
-        height: min(72vh, 620px);
+        width: 980px;
+        max-width: none;
+        height: 330px;
+      }
+
+      body.zoom-mode .work {
+        padding: 8px;
+      }
+
+      body.zoom-mode .roo-guide {
+        display: none;
+      }
+
+      body.zoom-mode .task-bar {
+        margin: 0 0 8px;
+        padding: max(6px, env(safe-area-inset-top)) 0 6px;
+        background: rgba(255, 255, 255, 0.96);
       }
 
       .piece-grid {
@@ -1867,8 +1917,8 @@
       Object.entries(noteY).forEach(([name, y]) => {
         const zone = el("rect", { class: "note-zone", x: 224, y: y - 8, width: 690, height: 16, rx: 8 });
         zone.dataset.note = name;
-        zone.addEventListener("click", () => {
-          if (state.screen === "compose") placeAttempt(name);
+        zone.addEventListener("click", (event) => {
+          if (state.screen === "compose") placeAttempt(noteFromPoint(event.clientX, event.clientY));
         });
         zonesLayer.appendChild(zone);
       });
@@ -2375,8 +2425,10 @@
     }
 
     function noteFromPoint(clientX, clientY) {
-      const rect = staffShell.getBoundingClientRect();
-      const y = ((clientY - rect.top) / rect.height) * 330;
+      const point = staffSvg.createSVGPoint();
+      point.x = clientX;
+      point.y = clientY;
+      const y = point.matrixTransform(staffSvg.getScreenCTM().inverse()).y;
       let best = null;
       Object.entries(noteY).forEach(([name, value]) => {
         const dist = Math.abs(value - y);
@@ -2478,8 +2530,13 @@
     function toggleZoomMode() {
       const expanded = document.body.classList.toggle("zoom-mode");
       zoomButton.textContent = expanded ? "Вернуться" : "Увеличить";
+      zoomButton.setAttribute("aria-pressed", String(expanded));
       if (expanded) window.scrollTo({ top: 0, behavior: "smooth" });
     }
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && document.body.classList.contains("zoom-mode")) toggleZoomMode();
+    });
 
     function renderFrameTabs() {
       const list = document.getElementById("frameList");
