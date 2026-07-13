@@ -402,6 +402,7 @@
       .roo,
       .main {
         min-height: auto;
+        min-width: 0;
       }
 
       .today {
@@ -418,7 +419,50 @@
       }
 
       .stars {
-        grid-template-columns: repeat(5, 1fr);
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 480px) {
+      .screen {
+        padding: 8px;
+      }
+
+      .board {
+        padding: 20px 18px 22px;
+      }
+
+      .board-head {
+        margin-bottom: 12px;
+      }
+
+      .board-head h2 {
+        font-size: 22px;
+      }
+
+      .count {
+        min-width: 68px;
+        padding: 5px 8px;
+        font-size: 15px;
+      }
+
+      .stars {
+        gap: 7px;
+        padding: 4px 0 0;
+      }
+
+      .star {
+        min-width: 0;
+        min-height: 0;
+        font-size: clamp(23px, 8vw, 30px);
+      }
+
+      .star-number {
+        right: 3px;
+        bottom: 3px;
+        width: 18px;
+        height: 18px;
+        font-size: 10px;
       }
     }
   </style>
